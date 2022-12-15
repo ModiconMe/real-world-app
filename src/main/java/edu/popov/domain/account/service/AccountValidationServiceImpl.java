@@ -76,13 +76,15 @@ public class AccountValidationServiceImpl implements AccountValidationService {
 
         String email = request.getEmail();
         Optional<Account> byEmail = accountRepository.findByEmail(email);
-        if (byEmail.isPresent() && !byEmail.get().getId().equals(id))
-            throw new NotFoundException(format(ACCOUNT_ALREADY_EXIST_BY_EMAIL, email));
+        if (byEmail.isPresent() && !byEmail.get().getId().equals(id)) {
+            throw new BadRequestException(format(ACCOUNT_ALREADY_EXIST_BY_EMAIL, email));
+        }
 
         String username = request.getUsername();
         Optional<Account> byUsername = accountRepository.findByUsername(username);
-        if (byUsername.isPresent() && !byUsername.get().getId().equals(id))
-            throw new NotFoundException(format(ACCOUNT_ALREADY_EXIST_BY_USERNAME, email));
+        if (byUsername.isPresent() && !byUsername.get().getId().equals(id)) {
+            throw new BadRequestException(format(ACCOUNT_ALREADY_EXIST_BY_USERNAME, username));
+        }
 
         return byId.get();
     }

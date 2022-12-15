@@ -182,7 +182,7 @@ class AccountControllerTest {
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
                                 )
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound());
 
         // then
     }
@@ -204,7 +204,7 @@ class AccountControllerTest {
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
                                 )
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound());
 
         // then
     }
@@ -228,6 +228,7 @@ class AccountControllerTest {
                 .build();
 
         String json = objectMapper.writeValueAsString(request) + "; " + objectMapper.writeValueAsString(accountDetails);
+
         // when
         ResultActions perform = mockMvc
                 .perform(
@@ -247,5 +248,87 @@ class AccountControllerTest {
         Optional<Account> optionalAccount = accountRepository.findByEmail(request.getEmail());
         assertThat(optionalAccount.isPresent());
         assertThat(optionalAccount.get().getBio()).isEqualTo(request.getBio());
+    }
+
+    @Test
+    @Order(9)
+    void itShouldNotUpdateAccount_whenEmailIsAlreadyExists() throws Exception {
+        // given
+        AccountDTO.Update request = AccountDTO.Update.builder()
+                .username("user1")
+                .email("user2@gmail.com")
+                .password("pass1")
+                .bio("bio")
+                .image("image")
+                .build();
+
+        AccountDetails accountDetails = AccountDetails.builder()
+                .email("user1@gmail.com")
+                .password("pass1")
+                .id(1L)
+                .build();
+
+        String json = objectMapper.writeValueAsString(request) + "; " + objectMapper.writeValueAsString(accountDetails);
+
+        AccountDTO.Registration registration = AccountDTO.Registration.builder()
+                .username("user2")
+                .email("user2@gmail.com")
+                .password("pass2")
+                .build();
+
+                mockMvc.perform(
+                        post("/api/v1/users/registry")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(registration))
+                                )
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        // when
+        ResultActions perform = mockMvc
+                .perform(
+                        put("/api/v1/users")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json
+                                )
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
+
+        // then
+    }
+
+    @Test
+    @Order(10)
+    void itShouldNotUpdateAccount_whenUsernameIsAlreadyExists() throws Exception {
+        // given
+        AccountDTO.Update request = AccountDTO.Update.builder()
+                .username("user2")
+                .email("user1@gmail.com")
+                .password("pass1")
+                .bio("bio")
+                .image("image")
+                .build();
+
+        AccountDetails accountDetails = AccountDetails.builder()
+                .email("user1@gmail.com")
+                .password("pass1")
+                .id(1L)
+                .build();
+
+        String json = objectMapper.writeValueAsString(request) + "; " + objectMapper.writeValueAsString(accountDetails);
+
+        // when
+        ResultActions perform = mockMvc
+                .perform(
+                        put("/api/v1/users")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json
+                                )
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
+
+        // then
     }
 }

@@ -4,8 +4,13 @@ import edu.popov.domain.account.dto.AccountDTO;
 import edu.popov.domain.account.dto.AccountMapper;
 import edu.popov.domain.account.entity.Account;
 import edu.popov.domain.account.repository.AccountRepository;
+import edu.popov.security.AccountDetails;
+import edu.popov.security.jwt.JwtUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +24,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper mapper;
     private final AccountValidationService accountValidationService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
     /**
      * Check that account are not exist by email and username, register new account.
@@ -47,9 +53,13 @@ public class AccountServiceImpl implements AccountService {
      * @return dto
      */
     @Override
-    public Account auth(AccountDTO.Auth request) {
-        return accountValidationService.authValidation(request);
-
+    public String auth(AccountDTO.Auth request) {
+        Account account = accountValidationService.authValidation(request);
+        return jwtUtils.generateToken(AccountDetails.builder()
+                .id(account.getId())
+                .email(account.getEmail())
+                .password(account.getPassword())
+                .build());
     }
 
     /**
@@ -74,5 +84,10 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
 
         return mapper.mapToAccountDTO(account);
+    }
+
+    @Override
+    public UserDetails currentUser() {
+        return (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

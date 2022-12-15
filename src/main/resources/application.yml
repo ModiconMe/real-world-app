@@ -15,5 +15,5 @@ spring:
     show-sql: true
 
 jwt:
-  secret:
-    key: jwt-secret
+  secret-key: secret-secret-secret-secret-secret-secret # at least 32 character
+  valid-time: 24 # hours

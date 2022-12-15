@@ -1,19 +1,15 @@
 package edu.popov.security;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-@RequiredArgsConstructor
 @Builder
-public class AccountDetails implements UserDetails {
-
-    private final Long id;
-    private final String email;
-    private final String password;
+public record AccountDetails(Long id, String email, String password) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -50,7 +46,4 @@ public class AccountDetails implements UserDetails {
         return true;
     }
 
-    public Long getId() {
-        return id;
-    }
 }

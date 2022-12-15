@@ -8,6 +8,7 @@ import edu.popov.utils.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
@@ -66,6 +68,7 @@ class AccountValidationServiceImplTest {
     }
 
     @Test
+    @MethodSource
     void itShouldNotValidateAccountRegistry_whenEmailIsAlreadyExists() {
         // given
         String email = "user1@gmail.com";
@@ -205,4 +208,115 @@ class AccountValidationServiceImplTest {
         then(accountRepository).shouldHaveNoMoreInteractions();
     }
 
+    @Test
+    void itShouldValidateAccountUpdate() {
+        // given
+        Account account = Account.builder()
+                .id(1L)
+                .username("user1")
+                .email("user1@gmail.com")
+                .password("pass1")
+                .bio("bio")
+                .image("image")
+                .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
+                .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
+                .build();
+        AccountDTO.Update request = AccountDTO.Update.builder()
+                .email("user1@gmail.com")
+                .username("user2")
+                .password("pass1")
+                .bio("bio")
+                .image("image")
+                .build();
+
+        when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
+        when(accountRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
+        when(accountRepository.findByUsername(request.getUsername())).thenReturn(Optional.empty());
+
+        // when
+        Account expected = underTest.updateValidation(1L, request);
+
+        // then
+        assertThat(expected).isEqualTo(account);
+    }
+
+    @Test
+    void itShouldNotValidateAccountUpdate_whenIdIsNotExists() {
+        // given
+        Account account1 = Account.builder()
+                .id(1L)
+                .build();
+        AccountDTO.Update request = AccountDTO.Update.builder()
+                .email("user1@gmail.com")
+                .username("user2")
+                .password("pass1")
+                .bio("bio")
+                .image("image")
+                .build();
+
+        when(accountRepository.findById(account1.getId())).thenReturn(Optional.empty());
+
+        // when
+        // then
+        assertThatThrownBy(() -> underTest.updateValidation(account1.getId(), request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining(ACCOUNT_NOT_FOUND_BY_ID, account1.getId());
+    }
+
+    @Test
+    void itShouldNotValidateAccountUpdate_whenEmailIsAlreadyExists() {
+        // given
+        Account account1 = Account.builder()
+                .id(1L)
+                .build();
+        Account account2 = Account.builder()
+                .id(2L)
+                .email("user1@gmail.com")
+                .build();
+        AccountDTO.Update request = AccountDTO.Update.builder()
+                .email("user1@gmail.com")
+                .username("user2")
+                .password("pass1")
+                .bio("bio")
+                .image("image")
+                .build();
+
+        when(accountRepository.findById(account1.getId())).thenReturn(Optional.of(account1));
+        when(accountRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(account2));
+
+        // when
+        // then
+        assertThatThrownBy(() -> underTest.updateValidation(account1.getId(), request))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining(ACCOUNT_ALREADY_EXIST_BY_EMAIL, request.getEmail());
+    }
+
+    @Test
+    void itShouldNotValidateAccountUpdate_whenUsernameIsAlreadyExists() {
+        // given
+        Account account1 = Account.builder()
+                .id(1L)
+                .build();
+        Account account2 = Account.builder()
+                .id(2L)
+                .username("user1")
+                .build();
+        AccountDTO.Update request = AccountDTO.Update.builder()
+                .email("user1@gmail.com")
+                .username("user2")
+                .password("pass1")
+                .bio("bio")
+                .image("image")
+                .build();
+
+        when(accountRepository.findById(account1.getId())).thenReturn(Optional.of(account1));
+        when(accountRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
+        when(accountRepository.findByUsername(request.getUsername())).thenReturn(Optional.of(account2));
+
+        // when
+        // then
+        assertThatThrownBy(() -> underTest.updateValidation(account1.getId(), request))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining(ACCOUNT_ALREADY_EXIST_BY_USERNAME, request.getUsername());
+    }
 }
