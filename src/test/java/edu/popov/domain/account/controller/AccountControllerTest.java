@@ -10,7 +10,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -46,6 +45,7 @@ class AccountControllerTest {
     @Test
     @Order(1)
     void itShouldRegisterAccount() throws Exception {
+        accountRepository.deleteAll();
         // given
         AccountDTO.Registration request = AccountDTO.Registration.builder()
                 .username("user1")
@@ -164,6 +164,7 @@ class AccountControllerTest {
         // then
         AccountDTO accountDTO = objectMapper.readValue(perform.andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), AccountDTO.class);
         Bearer = accountDTO.getToken();
+        assertThat(Bearer).isNotEmpty();
     }
 
     @Test
@@ -332,4 +333,5 @@ class AccountControllerTest {
 
         // then
     }
+
 }

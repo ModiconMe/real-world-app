@@ -1,5 +1,6 @@
 package edu.popov.domain.account.entity;
 
+import edu.popov.domain.profile.entity.FollowRelation;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"id"})
+@ToString
 @Getter
 @Setter
 @Entity(name = "Account")
@@ -54,10 +56,18 @@ public class Account {
 
     @Singular
     @OneToMany(
-            mappedBy = "account",
+            mappedBy = "accountToFollow",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private Set<FollowRelation> followers;
+
+    @Singular
+    @OneToMany(
+            mappedBy = "userAccount",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<FollowRelation> followings;
 
 }

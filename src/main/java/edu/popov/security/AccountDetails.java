@@ -9,15 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 @Builder
-public record AccountDetails(
-        Long id,
-        String email,
-        String username,
-        String password,
-        String bio,
-        String image,
-        String token
-) implements UserDetails {
+public record AccountDetails(Long id, String email, String password) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

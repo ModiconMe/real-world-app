@@ -12,6 +12,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Getter
 @Setter
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -22,10 +23,19 @@ import lombok.*;
 })
 public class AccountDTO {
 
+    @JsonProperty(value = "username", access = JsonProperty.Access.READ_WRITE)
     private String username;
+
+    @JsonProperty(value = "token", access = JsonProperty.Access.READ_WRITE)
     private String token;
+
+    @JsonProperty(value = "email", access = JsonProperty.Access.READ_WRITE)
     private String email;
+
+    @JsonProperty(value = "bio", access = JsonProperty.Access.READ_WRITE)
     private String bio;
+
+    @JsonProperty(value = "image", access = JsonProperty.Access.READ_WRITE)
     private String image;
 
     @Builder

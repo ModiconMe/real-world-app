@@ -1,10 +1,17 @@
-package edu.popov.domain.account.entity;
+package edu.popov.domain.profile.entity;
 
+import edu.popov.domain.account.entity.Account;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"id"})
 @Entity(name = "FollowRelation")
 @Table(name = "follow_relation")
@@ -14,24 +21,26 @@ public class FollowRelation {
     private FollowRelationId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("followerId")
+    @MapsId("accountToFollowId")
     @JoinColumn(
-            name = "follower_id",
+            name = "account_to_follow_id",
+            nullable = false,
             foreignKey = @ForeignKey(
-                    name = "relation_follower_id_fk"
+                    name = "relation_account_to_follow_id_fk"
             )
     )
-    private Account follower;
+    private Account accountToFollow;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("accountId")
+    @MapsId("userAccountId")
     @JoinColumn(
-            name = "account_id",
+            name = "user_account_id",
+            nullable = false,
             foreignKey = @ForeignKey(
-                    name = "relation_account_id_fk"
+                    name = "relation_user_account_id_fk"
             )
     )
-    private Account account;
+    private Account userAccount;
 
     @Column(
             name = "created_at",
