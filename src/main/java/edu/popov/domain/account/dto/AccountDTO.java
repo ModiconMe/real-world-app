@@ -23,8 +23,8 @@ import lombok.*;
 public class AccountDTO {
 
     private String username;
+    private String token;
     private String email;
-    private String password;
     private String bio;
     private String image;
 

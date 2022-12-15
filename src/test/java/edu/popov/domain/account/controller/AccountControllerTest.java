@@ -56,7 +56,7 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        post("/api/v1/users/registry")
+                        post("/api/v1/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
                                 )
@@ -82,7 +82,7 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        post("/api/v1/users/registry")
+                        post("/api/v1/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
                                 )
@@ -107,7 +107,7 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        post("/api/v1/users/registry")
+                        post("/api/v1/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
                                 )
@@ -131,7 +131,7 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        post("/api/v1/users/registry")
+                        post("/api/v1/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
                                 )
@@ -155,14 +155,15 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        post("/api/v1/users/auth")
+                        post("/api/v1/users/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
                                 )
                                 .accept(MediaType.APPLICATION_JSON));
 
         // then
-        Bearer = perform.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        AccountDTO accountDTO = objectMapper.readValue(perform.andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), AccountDTO.class);
+        Bearer = accountDTO.getToken();
     }
 
     @Test
@@ -177,7 +178,7 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        post("/api/v1/users/auth")
+                        post("/api/v1/users/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
                                 )
@@ -199,7 +200,7 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        post("/api/v1/users/auth")
+                        post("/api/v1/users/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
                                 )
@@ -232,7 +233,7 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        put("/api/v1/users")
+                        put("/api/v1/user")
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json
@@ -276,8 +277,8 @@ class AccountControllerTest {
                 .password("pass2")
                 .build();
 
-                mockMvc.perform(
-                        post("/api/v1/users/registry")
+        mockMvc.perform(
+                        post("/api/v1/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(registration))
                                 )
@@ -287,7 +288,7 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        put("/api/v1/users")
+                        put("/api/v1/user")
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json
@@ -321,7 +322,7 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        put("/api/v1/users")
+                        put("/api/v1/user")
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json

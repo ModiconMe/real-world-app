@@ -12,22 +12,19 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/user")
-public class AccountController {
+@RequestMapping("api/v1/users")
+public class AuthenticateController {
 
     private final AccountService accountService;
 
-    @GetMapping
-    public UserDetails currentUser() {
-        return accountService.currentUser();
+    @PostMapping
+    public AccountDTO registration(@RequestBody @Valid AccountDTO.Registration request) {
+        return accountService.registry(request);
     }
 
-    @PutMapping
-    public AccountDTO update(
-            @RequestBody @Valid AccountDTO.Update request,
-            @AuthenticationPrincipal AccountDetails accountDetails
-    ) {
-        return accountService.update(accountDetails.id(), request);
+    @PostMapping("/login")
+    public AccountDTO auth(@RequestBody @Valid AccountDTO.Auth request) {
+        return accountService.auth(request);
     }
 
 }

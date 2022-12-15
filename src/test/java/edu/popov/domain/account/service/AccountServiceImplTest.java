@@ -64,7 +64,6 @@ class AccountServiceImplTest {
         AccountDTO accountDTO = AccountDTO.builder()
                 .username("user1")
                 .email("user1@gmail.com")
-                .password("pass1")
                 .bio("bio")
                 .image("image")
                 .build();
@@ -134,7 +133,6 @@ class AccountServiceImplTest {
         AccountDTO accountDTO = AccountDTO.builder()
                 .username("user2")
                 .email("user1@gmail.com")
-                .password("pass1")
                 .bio("bio")
                 .image("image")
                 .build();

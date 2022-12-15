@@ -53,13 +53,20 @@ public class AccountServiceImpl implements AccountService {
      * @return dto
      */
     @Override
-    public String auth(AccountDTO.Auth request) {
+    public AccountDTO auth(AccountDTO.Auth request) {
         Account account = accountValidationService.authValidation(request);
-        return jwtUtils.generateToken(AccountDetails.builder()
+        String token = jwtUtils.generateToken(AccountDetails.builder()
                 .id(account.getId())
                 .email(account.getEmail())
                 .password(account.getPassword())
                 .build());
+        return AccountDTO.builder()
+                .email(account.getEmail())
+                .username(account.getUsername())
+                .bio(account.getBio())
+                .image(account.getImage())
+                .token(token)
+                .build();
     }
 
     /**
