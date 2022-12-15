@@ -1,0 +1,31 @@
+package edu.popov.utils;
+
+import edu.popov.domain.account.dto.AccountDTO;
+import edu.popov.domain.account.entity.Account;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
+import org.modelmapper.convention.NameTokenizers;
+import org.modelmapper.convention.NamingConventions;
+import org.modelmapper.spi.NameTokenizer;
+import org.modelmapper.spi.NamingConvention;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ApplicationConfig {
+
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STANDARD)
+                .setSourceNamingConvention(NamingConventions.JAVABEANS_ACCESSOR)
+                .setDestinationNamingConvention(NamingConventions.JAVABEANS_MUTATOR)
+                .setSourceNameTokenizer(NameTokenizers.CAMEL_CASE)
+                .setDestinationNameTokenizer(NameTokenizers.CAMEL_CASE);
+//        mapper.createTypeMap(Account.class, AccountDTO.class)
+//                .addMapping(m -> mapper.map(Account::getUsername, AccountDTO::set)));
+        return mapper;
+    }
+
+}
