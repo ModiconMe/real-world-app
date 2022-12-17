@@ -1,10 +1,10 @@
 package edu.popov.domain.profile.service;
 
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.account.repository.AccountRepository;
 import edu.popov.domain.profile.dto.ProfileDTO;
 import edu.popov.domain.profile.dto.ProfileMapper;
-import edu.popov.domain.profile.entity.FollowRelation;
+import edu.popov.domain.profile.entity.FollowRelationEntity;
 import edu.popov.domain.profile.entity.FollowRelationId;
 import edu.popov.domain.profile.repository.FollowRelationRepository;
 import edu.popov.utils.exception.NotFoundException;
@@ -32,7 +32,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileDTO getProfile(String username, Long id) {
-        Account profile = getAccountByUsername(username);
+        AccountEntity profile = getAccountByUsername(username);
         ProfileDTO profileDTO = mapper.mapToProfileDTO(profile);
 
         FollowRelationId followRelationId = FollowRelationId.builder()
@@ -40,7 +40,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .userAccountId(id)
                 .build();
 
-        Optional<FollowRelation> optionalFollowRelation =
+        Optional<FollowRelationEntity> optionalFollowRelation =
                 followRelationRepository.findById(followRelationId);
         if (optionalFollowRelation.isPresent())
             profileDTO.setFollowing(true);
@@ -51,8 +51,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public ProfileDTO followProfile(String username, Long id) {
-        Account profile = getAccountByUsername(username);
-        Account userAccount = getAccountById(id);
+        AccountEntity profile = getAccountByUsername(username);
+        AccountEntity userAccount = getAccountById(id);
 
         ProfileDTO followedProfile = mapper.mapToProfileDTO(profile);
         followedProfile.setFollowing(true);
@@ -66,7 +66,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (followRelationRepository.findById(followRelationId).isPresent())
             return followedProfile;
 
-        FollowRelation followRelation = FollowRelation.builder()
+        FollowRelationEntity followRelation = FollowRelationEntity.builder()
                 .id(followRelationId)
                 .accountToFollow(profile)
                 .userAccount(userAccount)
@@ -81,8 +81,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public ProfileDTO unfollowProfile(String username, Long id) {
-        Account profile = getAccountByUsername(username);
-        Account userAccount = getAccountById(id);
+        AccountEntity profile = getAccountByUsername(username);
+        AccountEntity userAccount = getAccountById(id);
 
         ProfileDTO unfollowedProfile = mapper.mapToProfileDTO(profile);
         unfollowedProfile.setFollowing(false);
@@ -103,8 +103,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Account getAccountById(Long id) {
-        Optional<Account> optionalProfile = accountRepository.findById(id);
+    public AccountEntity getAccountById(Long id) {
+        Optional<AccountEntity> optionalProfile = accountRepository.findById(id);
         if(optionalProfile.isEmpty())
             throw new NotFoundException(format(ACCOUNT_NOT_FOUND_BY_ID, id));
 
@@ -112,8 +112,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Account getAccountByUsername(String username) {
-        Optional<Account> optionalProfile = accountRepository.findByUsername(username);
+    public AccountEntity getAccountByUsername(String username) {
+        Optional<AccountEntity> optionalProfile = accountRepository.findByUsername(username);
         if(optionalProfile.isEmpty())
             throw new NotFoundException(format(ACCOUNT_NOT_FOUND_BY_USERNAME, username));
 

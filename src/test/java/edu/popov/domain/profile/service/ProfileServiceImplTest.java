@@ -1,14 +1,13 @@
 package edu.popov.domain.profile.service;
 
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.account.repository.AccountRepository;
 import edu.popov.domain.profile.dto.ProfileDTO;
 import edu.popov.domain.profile.dto.ProfileMapper;
-import edu.popov.domain.profile.entity.FollowRelation;
+import edu.popov.domain.profile.entity.FollowRelationEntity;
 import edu.popov.domain.profile.entity.FollowRelationId;
 import edu.popov.domain.profile.repository.FollowRelationRepository;
 import edu.popov.utils.exception.NotFoundException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +50,7 @@ class ProfileServiceImplTest {
     void itShouldGetAccountById() {
         // given
         long id = 1L;
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .id(id)
                 .username("user1")
                 .email("user1@gmail.com")
@@ -64,7 +63,7 @@ class ProfileServiceImplTest {
         when(accountRepository.findById(id)).thenReturn(Optional.of(account));
 
         // when
-        Account expected = underTest.getAccountById(id);
+        AccountEntity expected = underTest.getAccountById(id);
         // then
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
         verify(accountRepository, times(1)).findById(captor.capture());
@@ -88,7 +87,7 @@ class ProfileServiceImplTest {
     void itShouldGetAccountByUsername() {
         // given
         String username = "user1";
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username(username)
                 .email("user1@gmail.com")
                 .password("pass1")
@@ -100,7 +99,7 @@ class ProfileServiceImplTest {
         when(accountRepository.findByUsername(username)).thenReturn(Optional.of(account));
 
         // when
-        Account expected = underTest.getAccountByUsername(username);
+        AccountEntity expected = underTest.getAccountByUsername(username);
         // then
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(accountRepository, times(1)).findByUsername(captor.capture());
@@ -123,7 +122,7 @@ class ProfileServiceImplTest {
     @Test
     void itShouldGetProfile() {
         // given
-        Account accountToFollow = Account.builder()
+        AccountEntity accountToFollow = AccountEntity.builder()
                 .id(1L)
                 .username("user1")
                 .email("user1@gmail.com")
@@ -131,7 +130,7 @@ class ProfileServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        Account userAccount = Account.builder()
+        AccountEntity userAccount = AccountEntity.builder()
                 .id(2L)
                 .username("user2")
                 .email("user2@gmail.com")
@@ -147,7 +146,7 @@ class ProfileServiceImplTest {
                 .accountToFollowId(accountToFollow.getId())
                 .userAccountId(userAccount.getId())
                 .build();
-        FollowRelation followRelation = FollowRelation.builder()
+        FollowRelationEntity followRelation = FollowRelationEntity.builder()
                 .id(followRelationId)
                 .accountToFollow(accountToFollow)
                 .userAccount(userAccount)
@@ -168,7 +167,7 @@ class ProfileServiceImplTest {
     @Test
     void itShouldGetProfile_whenFollowing() {
         // given
-        Account accountToFollow = Account.builder()
+        AccountEntity accountToFollow = AccountEntity.builder()
                 .id(1L)
                 .username("user1")
                 .email("user1@gmail.com")
@@ -176,7 +175,7 @@ class ProfileServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        Account userAccount = Account.builder()
+        AccountEntity userAccount = AccountEntity.builder()
                 .id(2L)
                 .username("user2")
                 .email("user2@gmail.com")
@@ -207,7 +206,7 @@ class ProfileServiceImplTest {
     @Test
     void itShouldReturnTrueFollowingProfileDTO_whenAlreadyFollow() {
         // given
-        Account accountToFollow = Account.builder()
+        AccountEntity accountToFollow = AccountEntity.builder()
                 .id(1L)
                 .username("user1")
                 .email("user1@gmail.com")
@@ -215,7 +214,7 @@ class ProfileServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        Account userAccount = Account.builder()
+        AccountEntity userAccount = AccountEntity.builder()
                 .id(2L)
                 .username("user2")
                 .email("user2@gmail.com")
@@ -231,7 +230,7 @@ class ProfileServiceImplTest {
                 .accountToFollowId(accountToFollow.getId())
                 .userAccountId(userAccount.getId())
                 .build();
-        FollowRelation followRelation = FollowRelation.builder()
+        FollowRelationEntity followRelation = FollowRelationEntity.builder()
                 .id(followRelationId)
                 .accountToFollow(accountToFollow)
                 .userAccount(userAccount)
@@ -253,7 +252,7 @@ class ProfileServiceImplTest {
     @Test
     void itShouldReturnTrueFollowingProfileDTO_whenFollow() {
         // given
-        Account accountToFollow = Account.builder()
+        AccountEntity accountToFollow = AccountEntity.builder()
                 .id(1L)
                 .username("user1")
                 .email("user1@gmail.com")
@@ -261,7 +260,7 @@ class ProfileServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        Account userAccount = Account.builder()
+        AccountEntity userAccount = AccountEntity.builder()
                 .id(2L)
                 .username("user2")
                 .email("user2@gmail.com")
@@ -293,7 +292,7 @@ class ProfileServiceImplTest {
     @Test
     void itShouldReturnFalseFollowingProfileDTO_whenUnfollow() {
         // given
-        Account accountToFollow = Account.builder()
+        AccountEntity accountToFollow = AccountEntity.builder()
                 .id(1L)
                 .username("user1")
                 .email("user1@gmail.com")
@@ -301,7 +300,7 @@ class ProfileServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        Account userAccount = Account.builder()
+        AccountEntity userAccount = AccountEntity.builder()
                 .id(2L)
                 .username("user2")
                 .email("user2@gmail.com")
@@ -317,7 +316,7 @@ class ProfileServiceImplTest {
                 .accountToFollowId(accountToFollow.getId())
                 .userAccountId(userAccount.getId())
                 .build();
-        FollowRelation followRelation = FollowRelation.builder()
+        FollowRelationEntity followRelation = FollowRelationEntity.builder()
                 .id(followRelationId)
                 .accountToFollow(accountToFollow)
                 .userAccount(userAccount)
@@ -339,7 +338,7 @@ class ProfileServiceImplTest {
     @Test
     void itShouldReturnFalseFollowingProfileDTO_whenAlreadyUnfollow() {
         // given
-        Account accountToFollow = Account.builder()
+        AccountEntity accountToFollow = AccountEntity.builder()
                 .id(1L)
                 .username("user1")
                 .email("user1@gmail.com")
@@ -347,7 +346,7 @@ class ProfileServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        Account userAccount = Account.builder()
+        AccountEntity userAccount = AccountEntity.builder()
                 .id(2L)
                 .username("user2")
                 .email("user2@gmail.com")
@@ -363,7 +362,7 @@ class ProfileServiceImplTest {
                 .accountToFollowId(accountToFollow.getId())
                 .userAccountId(userAccount.getId())
                 .build();
-        FollowRelation followRelation = FollowRelation.builder()
+        FollowRelationEntity followRelation = FollowRelationEntity.builder()
                 .id(followRelationId)
                 .accountToFollow(accountToFollow)
                 .userAccount(userAccount)
@@ -385,7 +384,7 @@ class ProfileServiceImplTest {
     @Test
     void itShouldGetFollowers() {
         // given
-        Account userAccount = Account.builder()
+        AccountEntity userAccount = AccountEntity.builder()
                 .id(1L)
                 .username("user1")
                 .email("user1@gmail.com")
@@ -393,7 +392,7 @@ class ProfileServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        Account follower = Account.builder()
+        AccountEntity follower = AccountEntity.builder()
                 .id(2L)
                 .username("user2")
                 .email("user2@gmail.com")
@@ -419,7 +418,7 @@ class ProfileServiceImplTest {
     @Test
     void itShouldNotGetFollowings() {
         // given
-        Account userAccount = Account.builder()
+        AccountEntity userAccount = AccountEntity.builder()
                 .id(1L)
                 .username("user1")
                 .email("user1@gmail.com")

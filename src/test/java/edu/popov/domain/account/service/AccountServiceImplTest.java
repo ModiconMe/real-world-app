@@ -2,16 +2,13 @@ package edu.popov.domain.account.service;
 
 import edu.popov.domain.account.dto.AccountDTO;
 import edu.popov.domain.account.dto.AccountMapper;
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.account.repository.AccountRepository;
 import edu.popov.security.AccountDetails;
 import edu.popov.security.jwt.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,7 +49,7 @@ class AccountServiceImplTest {
     @Test
     void itShouldRegistryAccount() {
         // given
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username("user1")
                 .email("user1@gmail.com")
                 .password("pass1")
@@ -90,7 +87,7 @@ class AccountServiceImplTest {
     @Test
     void itShouldAuthAccount() {
         // given
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username("user1")
                 .email("user1@gmail.com")
                 .password("pass1")
@@ -121,7 +118,7 @@ class AccountServiceImplTest {
     @Test
     void itShouldUpdateAccount() {
         // given
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username("user1")
                 .email("user1@gmail.com")
                 .password("pass1")

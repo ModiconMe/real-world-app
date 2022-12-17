@@ -2,7 +2,7 @@ package edu.popov.domain.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.popov.domain.account.dto.AccountDTO;
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.account.repository.AccountRepository;
 import edu.popov.security.AccountDetails;
 import org.hamcrest.Matchers;
@@ -38,8 +38,6 @@ class AccountControllerTest {
     @Autowired
     private AccountRepository accountRepository;
 
-    private AccountController underTest;
-
     private static String Bearer;
 
     @Test
@@ -65,7 +63,7 @@ class AccountControllerTest {
 
 
         // then
-        Optional<Account> expected = accountRepository.findByEmail(request.getEmail());
+        Optional<AccountEntity> expected = accountRepository.findByEmail(request.getEmail());
         assertThat(expected.isPresent()).isTrue();
     }
 
@@ -90,7 +88,7 @@ class AccountControllerTest {
                 .andExpect(status().isUnprocessableEntity());
 
         // then
-        Optional<Account> expected = accountRepository.findByEmail(request.getEmail());
+        Optional<AccountEntity> expected = accountRepository.findByEmail(request.getEmail());
         assertThat(expected.isPresent()).isFalse();
     }
 
@@ -115,7 +113,7 @@ class AccountControllerTest {
                 .andExpect(status().isUnprocessableEntity());
 
         // then
-        Optional<Account> expected = accountRepository.findByUsername(request.getUsername());
+        Optional<AccountEntity> expected = accountRepository.findByUsername(request.getUsername());
         assertThat(expected.isPresent()).isFalse();
     }
 
@@ -139,7 +137,7 @@ class AccountControllerTest {
                 .andExpect(status().isUnprocessableEntity());
 
         // then
-        Optional<Account> expected = accountRepository.findByUsername(request.getEmail());
+        Optional<AccountEntity> expected = accountRepository.findByUsername(request.getEmail());
         assertThat(expected.isPresent()).isFalse();
     }
 
@@ -247,7 +245,7 @@ class AccountControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.image", Matchers.is(request.getImage())));
 
         // then
-        Optional<Account> optionalAccount = accountRepository.findByEmail(request.getEmail());
+        Optional<AccountEntity> optionalAccount = accountRepository.findByEmail(request.getEmail());
         assertThat(optionalAccount.isPresent());
         assertThat(optionalAccount.get().getBio()).isEqualTo(request.getBio());
     }

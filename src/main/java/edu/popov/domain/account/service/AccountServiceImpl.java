@@ -2,7 +2,7 @@ package edu.popov.domain.account.service;
 
 import edu.popov.domain.account.dto.AccountDTO;
 import edu.popov.domain.account.dto.AccountMapper;
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.account.repository.AccountRepository;
 import edu.popov.security.AccountDetails;
 import edu.popov.security.jwt.JwtUtils;
@@ -10,7 +10,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +34,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDTO registry(AccountDTO.Registration request) {
         accountValidationService.registryValidation(request); // check that account registration request is valid, else throw
-        Account account = mapper.mapToAccount(request);
+        AccountEntity account = mapper.mapToAccount(request);
 
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         account.setCreatedAt(LocalDateTime.now());
@@ -54,7 +53,7 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public AccountDTO auth(AccountDTO.Auth request) {
-        Account account = accountValidationService.authValidation(request);
+        AccountEntity account = accountValidationService.authValidation(request);
         String token = jwtUtils.generateToken(AccountDetails.builder()
                 .id(account.getId())
                 .email(account.getEmail())
@@ -79,7 +78,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountDTO update(Long id, AccountDTO.Update request) {
-        Account account = accountValidationService.updateValidation(id, request);
+        AccountEntity account = accountValidationService.updateValidation(id, request);
 
         account.setUsername(request.getUsername());
         account.setEmail(request.getEmail());

@@ -1,6 +1,6 @@
 package edu.popov.domain.profile.dto;
 
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -11,11 +11,11 @@ public class ProfileMapper {
 
     private final ModelMapper mapper;
 
-    public ProfileDTO mapToProfileDTO(Account account) {
+    public ProfileDTO mapToProfileDTO(AccountEntity account) {
         return mapper.map(account, ProfileDTO.class);
     }
 
-    public ProfileDTO mapFollowingsToProfileDTO(Account account) {
+    public ProfileDTO mapFollowingsToProfileDTO(AccountEntity account) {
         ProfileDTO follow = mapper.map(account, ProfileDTO.class);
         follow.setFollowing(true);
         return follow;

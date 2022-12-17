@@ -1,6 +1,6 @@
 package edu.popov.domain.account.repository;
 
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -22,7 +22,7 @@ class AccountRepositoryTest {
     void itShouldNotRegisterAccount_whenEmailUniqueConstraintDisturbed() {
         // given
         String email = "user1@gmail.com";
-        Account account1 = Account.builder()
+        AccountEntity account1 = AccountEntity.builder()
                 .username("user1")
                 .email(email)
                 .password("pass1")
@@ -32,7 +32,7 @@ class AccountRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
 
-        Account account2 = Account.builder()
+        AccountEntity account2 = AccountEntity.builder()
                 .username("user2")
                 .email(email)
                 .password("pass2")
@@ -54,7 +54,7 @@ class AccountRepositoryTest {
     void itShouldNotRegisterAccount_whenUsernameUniqueConstraintDisturbed() {
         // given
         String username = "user1";
-        Account account1 = Account.builder()
+        AccountEntity account1 = AccountEntity.builder()
                 .username(username)
                 .email("user1@gmail.com")
                 .password("pass1")
@@ -64,7 +64,7 @@ class AccountRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
 
-        Account account2 = Account.builder()
+        AccountEntity account2 = AccountEntity.builder()
                 .username(username)
                 .email("user2@gmail.com")
                 .password("pass2")
@@ -86,7 +86,7 @@ class AccountRepositoryTest {
     void itShouldFindAccountByEmail() {
         // given
         String email = "user1@gmail.com";
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username("user1")
                 .email(email)
                 .password("pass1")
@@ -99,7 +99,7 @@ class AccountRepositoryTest {
         underTest.saveAndFlush(account);
 
         // when
-        Optional<Account> optionalAccount = underTest.findByEmail(email);
+        Optional<AccountEntity> optionalAccount = underTest.findByEmail(email);
 
         // then
         assertThat(optionalAccount).isPresent();
@@ -110,7 +110,7 @@ class AccountRepositoryTest {
     void itShouldFindAccountByUsername() {
         // given
         String username = "user1";
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username(username)
                 .email("user1@gmail.com")
                 .password("pass1")
@@ -123,7 +123,7 @@ class AccountRepositoryTest {
         underTest.saveAndFlush(account);
 
         // when
-        Optional<Account> optionalAccount = underTest.findByUsername(username);
+        Optional<AccountEntity> optionalAccount = underTest.findByUsername(username);
 
         // then
         assertThat(optionalAccount).isPresent();
@@ -135,7 +135,7 @@ class AccountRepositoryTest {
         // given
         String email = "user1@gmail.com";
         String password = "pass1";
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username("user1")
                 .email(email)
                 .password(password)
@@ -148,7 +148,7 @@ class AccountRepositoryTest {
         underTest.saveAndFlush(account);
 
         // when
-        Optional<Account> optionalAccount = underTest.findByEmailAndPassword(email, password);
+        Optional<AccountEntity> optionalAccount = underTest.findByEmailAndPassword(email, password);
 
         // then
         assertThat(optionalAccount).isPresent();

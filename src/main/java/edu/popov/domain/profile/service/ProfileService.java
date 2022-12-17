@@ -1,6 +1,6 @@
 package edu.popov.domain.profile.service;
 
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.profile.dto.ProfileDTO;
 
 import java.util.List;
@@ -13,9 +13,9 @@ public interface ProfileService {
 
     ProfileDTO unfollowProfile(String username, Long id);
 
-    Account getAccountById(Long id);
+    AccountEntity getAccountById(Long id);
 
-    Account getAccountByUsername(String username);
+    AccountEntity getAccountByUsername(String username);
 
     List<ProfileDTO> getFollowers(Long id);
 

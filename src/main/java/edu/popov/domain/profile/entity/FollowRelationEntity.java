@@ -1,6 +1,6 @@
 package edu.popov.domain.profile.entity;
 
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(exclude = {"id"})
 @Entity(name = "FollowRelation")
 @Table(name = "follow_relation")
-public class FollowRelation {
+public class FollowRelationEntity {
 
     @EmbeddedId
     private FollowRelationId id;
@@ -29,7 +29,7 @@ public class FollowRelation {
                     name = "relation_account_to_follow_id_fk"
             )
     )
-    private Account accountToFollow;
+    private AccountEntity accountToFollow;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userAccountId")
@@ -40,7 +40,7 @@ public class FollowRelation {
                     name = "relation_user_account_id_fk"
             )
     )
-    private Account userAccount;
+    private AccountEntity userAccount;
 
     @Column(
             name = "created_at",

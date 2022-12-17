@@ -1,6 +1,6 @@
 package edu.popov.domain.account.entity;
 
-import edu.popov.domain.profile.entity.FollowRelation;
+import edu.popov.domain.profile.entity.FollowRelationEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +22,7 @@ import java.util.Set;
                 @UniqueConstraint(name = "account_username_unique", columnNames = "user_name")
         }
 )
-public class Account {
+public class AccountEntity {
 
     @Id
     @SequenceGenerator(name = "account_sequence", sequenceName = "account_sequence", allocationSize = 1)
@@ -60,7 +60,7 @@ public class Account {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<FollowRelation> followers;
+    private Set<FollowRelationEntity> followers;
 
     @Singular
     @OneToMany(
@@ -68,6 +68,6 @@ public class Account {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<FollowRelation> followings;
+    private Set<FollowRelationEntity> followings;
 
 }

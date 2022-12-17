@@ -1,8 +1,8 @@
 package edu.popov.domain.profile.repository;
 
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.account.repository.AccountRepository;
-import edu.popov.domain.profile.entity.FollowRelation;
+import edu.popov.domain.profile.entity.FollowRelationEntity;
 import edu.popov.domain.profile.entity.FollowRelationId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ class FollowRelationRepositoryTest {
     @Test
     void itShouldFindRelation() {
         // given
-        Account account1 = Account.builder()
+        AccountEntity account1 = AccountEntity.builder()
                 .username("user1")
                 .email("user1@gmail.com")
                 .password("pass1")
@@ -36,7 +36,7 @@ class FollowRelationRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
 
-        Account account2 = Account.builder()
+        AccountEntity account2 = AccountEntity.builder()
                 .username("user2")
                 .email("user2@gmail.com")
                 .password("pass2")
@@ -46,7 +46,7 @@ class FollowRelationRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 11, 11, 17, 20, 20))
                 .build();
 
-        FollowRelation followRelation = FollowRelation.builder()
+        FollowRelationEntity followRelation = FollowRelationEntity.builder()
                 .id(FollowRelationId.builder()
                         .accountToFollowId(1L)
                         .userAccountId(2L)
@@ -61,7 +61,7 @@ class FollowRelationRepositoryTest {
         underTest.save(followRelation);
 
         // when
-        Optional<FollowRelation> optionalFollowRelation =
+        Optional<FollowRelationEntity> optionalFollowRelation =
                 underTest.findByAccountToFollowAndUserAccount(account1, account2);
 
         // then
@@ -72,7 +72,7 @@ class FollowRelationRepositoryTest {
     @Test
     void itShouldFindFollowers() {
         // given
-        Account account1 = Account.builder()
+        AccountEntity account1 = AccountEntity.builder()
                 .username("user1")
                 .email("user1@gmail.com")
                 .password("pass1")
@@ -82,7 +82,7 @@ class FollowRelationRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
 
-        Account account2 = Account.builder()
+        AccountEntity account2 = AccountEntity.builder()
                 .username("user2")
                 .email("user2@gmail.com")
                 .password("pass2")
@@ -92,7 +92,7 @@ class FollowRelationRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 11, 11, 17, 20, 20))
                 .build();
 
-        Account account3 = Account.builder()
+        AccountEntity account3 = AccountEntity.builder()
                 .username("user3")
                 .email("user3@gmail.com")
                 .password("pass3")
@@ -102,7 +102,7 @@ class FollowRelationRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 11, 11, 17, 20, 20))
                 .build();
 
-        FollowRelation followRelation1 = FollowRelation.builder()
+        FollowRelationEntity followRelation1 = FollowRelationEntity.builder()
                 .id(FollowRelationId.builder()
                         .accountToFollowId(1L)
                         .userAccountId(2L)
@@ -112,7 +112,7 @@ class FollowRelationRepositoryTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        FollowRelation followRelation2 = FollowRelation.builder()
+        FollowRelationEntity followRelation2 = FollowRelationEntity.builder()
                 .id(FollowRelationId.builder()
                         .accountToFollowId(1L)
                         .userAccountId(3L)
@@ -129,7 +129,7 @@ class FollowRelationRepositoryTest {
         underTest.save(followRelation2);
 
         // when
-        List<Account> followers = underTest.findFollowers(account1);
+        List<AccountEntity> followers = underTest.findFollowers(account1);
 
         // then
         assertThat(followers).isNotEmpty();
@@ -140,7 +140,7 @@ class FollowRelationRepositoryTest {
     @Test
     void itShouldFindFollowings() {
         // given
-        Account account1 = Account.builder()
+        AccountEntity account1 = AccountEntity.builder()
                 .username("user1")
                 .email("user1@gmail.com")
                 .password("pass1")
@@ -150,7 +150,7 @@ class FollowRelationRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
 
-        Account account2 = Account.builder()
+        AccountEntity account2 = AccountEntity.builder()
                 .username("user2")
                 .email("user2@gmail.com")
                 .password("pass2")
@@ -160,7 +160,7 @@ class FollowRelationRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 11, 11, 17, 20, 20))
                 .build();
 
-        Account account3 = Account.builder()
+        AccountEntity account3 = AccountEntity.builder()
                 .username("user3")
                 .email("user3@gmail.com")
                 .password("pass3")
@@ -170,7 +170,7 @@ class FollowRelationRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022, 11, 11, 17, 20, 20))
                 .build();
 
-        FollowRelation followRelation1 = FollowRelation.builder()
+        FollowRelationEntity followRelation1 = FollowRelationEntity.builder()
                 .id(FollowRelationId.builder()
                         .accountToFollowId(2L)
                         .userAccountId(1L)
@@ -180,7 +180,7 @@ class FollowRelationRepositoryTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        FollowRelation followRelation2 = FollowRelation.builder()
+        FollowRelationEntity followRelation2 = FollowRelationEntity.builder()
                 .id(FollowRelationId.builder()
                         .accountToFollowId(3L)
                         .userAccountId(1L)
@@ -197,7 +197,7 @@ class FollowRelationRepositoryTest {
         underTest.save(followRelation2);
 
         // when
-        List<Account> followers = underTest.findFollowings(account1);
+        List<AccountEntity> followers = underTest.findFollowings(account1);
 
         // then
         assertThat(followers).isNotEmpty();

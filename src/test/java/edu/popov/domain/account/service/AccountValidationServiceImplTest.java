@@ -1,7 +1,7 @@
 package edu.popov.domain.account.service;
 
 import edu.popov.domain.account.dto.AccountDTO;
-import edu.popov.domain.account.entity.Account;
+import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.account.repository.AccountRepository;
 import edu.popov.utils.exception.BadRequestException;
 import edu.popov.utils.exception.NotFoundException;
@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
@@ -73,7 +72,7 @@ class AccountValidationServiceImplTest {
         // given
         String email = "user1@gmail.com";
         String username = "user1";
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username(username)
                 .email(email)
                 .password("pass1")
@@ -103,7 +102,7 @@ class AccountValidationServiceImplTest {
         // given
         String email = "user1@gmail.com";
         String username = "user1";
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username(username)
                 .email(email)
                 .password("pass1")
@@ -134,7 +133,7 @@ class AccountValidationServiceImplTest {
         // given
         String email = "user1@gmail.com";
         String password = "pass1";
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username("user1")
                 .email(email)
                 .password("pass1")
@@ -152,7 +151,7 @@ class AccountValidationServiceImplTest {
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
         // when
-        Account expected = underTest.authValidation(request);
+        AccountEntity expected = underTest.authValidation(request);
 
         // then
         assertThat(expected).isEqualTo(account);
@@ -183,7 +182,7 @@ class AccountValidationServiceImplTest {
         // given
         String email = "user1@gmail.com";
         String password = "pass1";
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .username("user1")
                 .email(email)
                 .password("pass1")
@@ -211,7 +210,7 @@ class AccountValidationServiceImplTest {
     @Test
     void itShouldValidateAccountUpdate() {
         // given
-        Account account = Account.builder()
+        AccountEntity account = AccountEntity.builder()
                 .id(1L)
                 .username("user1")
                 .email("user1@gmail.com")
@@ -234,7 +233,7 @@ class AccountValidationServiceImplTest {
         when(accountRepository.findByUsername(request.getUsername())).thenReturn(Optional.empty());
 
         // when
-        Account expected = underTest.updateValidation(1L, request);
+        AccountEntity expected = underTest.updateValidation(1L, request);
 
         // then
         assertThat(expected).isEqualTo(account);
@@ -243,7 +242,7 @@ class AccountValidationServiceImplTest {
     @Test
     void itShouldNotValidateAccountUpdate_whenIdIsNotExists() {
         // given
-        Account account1 = Account.builder()
+        AccountEntity account1 = AccountEntity.builder()
                 .id(1L)
                 .build();
         AccountDTO.Update request = AccountDTO.Update.builder()
@@ -266,10 +265,10 @@ class AccountValidationServiceImplTest {
     @Test
     void itShouldNotValidateAccountUpdate_whenEmailIsAlreadyExists() {
         // given
-        Account account1 = Account.builder()
+        AccountEntity account1 = AccountEntity.builder()
                 .id(1L)
                 .build();
-        Account account2 = Account.builder()
+        AccountEntity account2 = AccountEntity.builder()
                 .id(2L)
                 .email("user1@gmail.com")
                 .build();
@@ -294,10 +293,10 @@ class AccountValidationServiceImplTest {
     @Test
     void itShouldNotValidateAccountUpdate_whenUsernameIsAlreadyExists() {
         // given
-        Account account1 = Account.builder()
+        AccountEntity account1 = AccountEntity.builder()
                 .id(1L)
                 .build();
-        Account account2 = Account.builder()
+        AccountEntity account2 = AccountEntity.builder()
                 .id(2L)
                 .username("user1")
                 .build();
