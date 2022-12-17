@@ -8,6 +8,7 @@ import edu.popov.domain.article.entity.CommentEntity;
 import edu.popov.domain.article.repository.ArticleRepository;
 import edu.popov.domain.article.repository.CommentRepository;
 import edu.popov.domain.profile.service.ProfileService;
+import edu.popov.utils.exception.ForbiddenException;
 import edu.popov.utils.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class CommentServiceImpl implements CommentService {
 
     private static final String ARTICLE_NOT_FOUND_BY_SLUG = "Article with slug %s is not found";
     private static final String COMMENT_NOT_FOUND_BY_SLUG_AND_ID = "Comment with id %d of article with slug %s is not found";
+    private static final String IS_NOT_AN_OWNER_OF_COMMENT = "Comment with id %d is not owned by %s";
 
     @Override
     @Transactional
@@ -66,15 +68,20 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentDTO deleteComment(String slug, Long commentId) {
+    public CommentDTO deleteComment(String slug, Long commentId, Long userId) {
         ArticleEntity article = articleRepository.findBySlug(slug)
                 .orElseThrow(() -> new NotFoundException(format(ARTICLE_NOT_FOUND_BY_SLUG, slug)));
 
         CommentEntity commentEntity = commentRepository.findByIdAndArticle(commentId, article)
                 .orElseThrow(() -> new NotFoundException(format(COMMENT_NOT_FOUND_BY_SLUG_AND_ID, commentId, slug)));
 
-        commentRepository.deleteById(commentId);
+        AccountEntity user = profileService.getAccountById(userId);
 
-        return commentMapper.mapToCommentDTO(commentEntity);
+        if (commentEntity.getAccount().getUsername().equals(user.getUsername())) {
+            commentRepository.deleteById(commentId);
+            return commentMapper.mapToCommentDTO(commentEntity);
+        }
+
+        throw new ForbiddenException(format(IS_NOT_AN_OWNER_OF_COMMENT, commentId, user.getUsername()));
     }
 }

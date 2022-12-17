@@ -1,6 +1,7 @@
 package edu.popov.utils;
 
 import edu.popov.utils.exception.BadRequestException;
+import edu.popov.utils.exception.ForbiddenException;
 import edu.popov.utils.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.naming.AuthenticationException;
 import java.util.Objects;
 
 @ControllerAdvice
@@ -35,6 +37,36 @@ public class ApiExceptionHandler {
     )
     public ResponseEntity<Object> handle442ApiRequestException(RuntimeException e) {
         HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+        ApiException apiException = new ApiException(
+                e.getMessage(),
+                e.getClass(),
+                httpStatus
+        );
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    @ExceptionHandler(value =
+            {
+                    AuthenticationException.class
+            }
+    )
+    public ResponseEntity<Object> handle401ApiRequestException(RuntimeException e) {
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        ApiException apiException = new ApiException(
+                e.getMessage(),
+                e.getClass(),
+                httpStatus
+        );
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    @ExceptionHandler(value =
+            {
+                    ForbiddenException.class
+            }
+    )
+    public ResponseEntity<Object> handle403ApiRequestException(RuntimeException e) {
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
         ApiException apiException = new ApiException(
                 e.getMessage(),
                 e.getClass(),

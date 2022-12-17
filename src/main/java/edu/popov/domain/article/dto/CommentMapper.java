@@ -1,5 +1,6 @@
 package edu.popov.domain.article.dto;
 
+import edu.popov.domain.account.dto.AccountMapper;
 import edu.popov.domain.article.entity.ArticleEntity;
 import edu.popov.domain.article.entity.CommentEntity;
 import edu.popov.domain.article.entity.FavoriteEntity;
@@ -17,12 +18,13 @@ public class CommentMapper {
 
     private final ProfileMapper profileMapper;
     private final ProfileService profileService;
+    private final AccountMapper accountMapper;
 
     public CommentDTO mapToCommentDTO(CommentEntity commentEntity) {
         return CommentDTO.builder()
                 .id(commentEntity.getId())
                 .body(commentEntity.getBody())
-                .author(commentEntity.getAccount())
+                .author(accountMapper.mapToAccountDTO(commentEntity.getAccount()))
                 .createdAt(commentEntity.getCreatedAt())
                 .updatedAt(commentEntity.getUpdatedAt())
                 .build();

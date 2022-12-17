@@ -8,6 +8,6 @@ public interface CommentService {
 
     CommentDTO.MultipleComments getComments(String slug);
 
-    CommentDTO deleteComment(String slug, Long commentId);
+    CommentDTO deleteComment(String slug, Long commentId, Long userId);
 
 }

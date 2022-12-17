@@ -5,6 +5,7 @@ import edu.popov.domain.account.dto.AccountDTO;
 import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.account.repository.AccountRepository;
 import edu.popov.domain.article.dto.ArticleDTO;
+import edu.popov.domain.article.dto.CommentDTO;
 import edu.popov.domain.article.repository.ArticleRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.MethodOrderer;
@@ -27,7 +28,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -386,5 +386,137 @@ class ArticleControllerTest {
         // then
         ArticleDTO.MultipleArticle multipleArticle = objectMapper.readValue(contentAsString, ArticleDTO.MultipleArticle.class);
         assertThat(multipleArticle.getArticles().size()).isEqualTo(2);
+    }
+
+    @Test
+    @Order(5)
+    void itShouldAddCommentToArticle() throws Exception {
+        // given
+        CommentDTO.Create commentDTO1 = CommentDTO.Create.builder()
+                .body("comment1")
+                .build();
+
+        CommentDTO.Create commentDTO2 = CommentDTO.Create.builder()
+                .body("comment2")
+                .build();
+
+        CommentDTO.Create commentDTO3 = CommentDTO.Create.builder()
+                .body("comment3")
+                .build();
+
+        CommentDTO.Create commentDTO4 = CommentDTO.Create.builder()
+                .body("comment4")
+                .build();
+
+        String json1 = objectMapper.writeValueAsString(commentDTO1);
+        String json2 = objectMapper.writeValueAsString(commentDTO2);
+        String json3 = objectMapper.writeValueAsString(commentDTO3);
+        String json4 = objectMapper.writeValueAsString(commentDTO4);
+
+        // try to add comment without login and get UNAUTHORIZED exception
+        mockMvc
+                .perform(
+                        post("/api/v1/articles/title1/comments")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json1)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+
+        // add some comments
+        mockMvc
+                .perform(
+                        post("/api/v1/articles/title1/comments")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json1)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.body", Matchers.is("comment1")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author.username", Matchers.is("user1")));
+        mockMvc
+                .perform(
+                        post("/api/v1/articles/title1/comments")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json2)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.body", Matchers.is("comment2")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author.username", Matchers.is("user1")));
+        mockMvc
+                .perform(
+                        post("/api/v1/articles/title2/comments")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json3)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.body", Matchers.is("comment3")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author.username", Matchers.is("user1")));
+        mockMvc
+                .perform(
+                        post("/api/v1/articles/title3/comments")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json4)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.body", Matchers.is("comment4")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author.username", Matchers.is("user1")));
+
+        // get comments by slug with no login
+        String comments1 = mockMvc
+                .perform(
+                        get("/api/v1/articles/title1/comments")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        CommentDTO.MultipleComments article1Comments = objectMapper.readValue(comments1, CommentDTO.MultipleComments.class);
+        assertThat(article1Comments.getComments().size()).isEqualTo(2);
+        String comments2 = mockMvc
+                .perform(
+                        get("/api/v1/articles/title2/comments")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        CommentDTO.MultipleComments article2Comments = objectMapper.readValue(comments2, CommentDTO.MultipleComments.class);
+        assertThat(article2Comments.getComments().size()).isEqualTo(1);
+
+        // try delete comment without login and get FORBIDDEN
+        mockMvc
+                .perform(
+                        delete("/api/v1/articles/title1/comments/2")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer2)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+
+        // try delete comment other account comment and get UNAUTHORIZED
+        mockMvc
+                .perform(
+                        delete("/api/v1/articles/title1/comments/2")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+
+        // delete our comments
+        mockMvc
+                .perform(
+                        delete("/api/v1/articles/title1/comments/2")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.body", Matchers.is("comment2")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author.username", Matchers.is("user1")));
+
+        String commentsAfterDeleting = mockMvc
+                .perform(
+                        get("/api/v1/articles/title1/comments")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        CommentDTO.MultipleComments answerCommentsAfterDeleting = objectMapper.readValue(commentsAfterDeleting, CommentDTO.MultipleComments.class);
+        assertThat(answerCommentsAfterDeleting.getComments().size()).isEqualTo(1);
     }
 }

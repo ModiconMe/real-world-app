@@ -97,7 +97,8 @@ public class ArticleController {
             @PathVariable("id") Long commentId,
             @AuthenticationPrincipal AccountDetails accountDetails
     ) {
-        return commentService.deleteComment(slug, commentId);
+        CommentDTO commentDTO = commentService.deleteComment(slug, commentId, accountDetails.id());
+        return commentDTO;
     }
 
 

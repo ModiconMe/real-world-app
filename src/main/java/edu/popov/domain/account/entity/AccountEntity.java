@@ -10,8 +10,8 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"id"})
-@ToString
+@EqualsAndHashCode(exclude = {"id", "followings", "followers"})
+@ToString(exclude = {"followings", "followers"})
 @Getter
 @Setter
 @Entity(name = "Account")

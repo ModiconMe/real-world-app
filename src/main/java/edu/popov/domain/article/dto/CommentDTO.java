@@ -2,6 +2,7 @@ package edu.popov.domain.article.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import edu.popov.domain.account.dto.AccountDTO;
 import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.article.entity.ArticleEntity;
 import jakarta.persistence.*;
@@ -23,7 +24,7 @@ public class CommentDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String body;
-    private AccountEntity author;
+    private AccountDTO author;
 
     @Builder
     @AllArgsConstructor

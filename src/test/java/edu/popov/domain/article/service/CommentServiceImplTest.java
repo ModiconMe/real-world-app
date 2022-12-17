@@ -1,5 +1,6 @@
 package edu.popov.domain.article.service;
 
+import edu.popov.domain.account.dto.AccountDTO;
 import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.article.dto.CommentDTO;
 import edu.popov.domain.article.dto.CommentMapper;
@@ -8,6 +9,7 @@ import edu.popov.domain.article.entity.CommentEntity;
 import edu.popov.domain.article.repository.ArticleRepository;
 import edu.popov.domain.article.repository.CommentRepository;
 import edu.popov.domain.profile.service.ProfileService;
+import edu.popov.utils.exception.ForbiddenException;
 import edu.popov.utils.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,7 @@ class CommentServiceImplTest {
 
     private static final String ARTICLE_NOT_FOUND_BY_SLUG = "Article with slug %s is not found";
     private static final String COMMENT_NOT_FOUND_BY_SLUG_AND_ID = "Comment with id %d of article with slug %s is not found";
+    private static final String IS_NOT_AN_OWNER_OF_COMMENT = "Comment with id %d is not owned by %s";
 
     @BeforeEach
     void setUp() {
@@ -56,6 +59,12 @@ class CommentServiceImplTest {
                 .image("image")
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
+                .build();
+        AccountDTO accountDTO = AccountDTO.builder()
+                .username("user1")
+                .email("user1@gmail.com")
+                .bio("bio")
+                .image("image")
                 .build();
         ArticleEntity article = ArticleEntity.builder()
                 .id(1L)
@@ -79,7 +88,7 @@ class CommentServiceImplTest {
                 .build();
         CommentDTO commentDTO = CommentDTO.builder()
                 .body("body")
-                .author(account)
+                .author(accountDTO)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -148,6 +157,12 @@ class CommentServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
+        AccountDTO accountDTO = AccountDTO.builder()
+                .username("user1")
+                .email("user1@gmail.com")
+                .bio("bio")
+                .image("image")
+                .build();
         ArticleEntity article = ArticleEntity.builder()
                 .id(1L)
                 .slug("article-1")
@@ -167,7 +182,7 @@ class CommentServiceImplTest {
                 .build();
         CommentDTO commentDTO = CommentDTO.builder()
                 .body("body")
-                .author(account)
+                .author(accountDTO)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -231,6 +246,12 @@ class CommentServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
+        AccountDTO accountDTO = AccountDTO.builder()
+                .username("user1")
+                .email("user1@gmail.com")
+                .bio("bio")
+                .image("image")
+                .build();
         ArticleEntity article = ArticleEntity.builder()
                 .id(1L)
                 .slug("article-1")
@@ -250,17 +271,18 @@ class CommentServiceImplTest {
                 .build();
         CommentDTO commentDTO = CommentDTO.builder()
                 .body("body")
-                .author(account)
+                .author(accountDTO)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
         when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.of(article));
         when(commentRepository.findByIdAndArticle(commentEntity.getId(), article)).thenReturn(Optional.of(commentEntity));
+        when(profileService.getAccountById(account.getId())).thenReturn(account);
         when(commentMapper.mapToCommentDTO(commentEntity)).thenReturn(commentDTO);
 
         // when
-        underTest.deleteComment(article.getSlug(), commentEntity.getId());
+        underTest.deleteComment(article.getSlug(), commentEntity.getId(), account.getId());
 
         // then
         verify(articleRepository, times(1)).findBySlug(article.getSlug());
@@ -304,7 +326,7 @@ class CommentServiceImplTest {
 
         // when
         // then
-        assertThatThrownBy(() -> underTest.deleteComment(article.getSlug(), commentEntity.getId()))
+        assertThatThrownBy(() -> underTest.deleteComment(article.getSlug(), commentEntity.getId(), account.getId()))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining(ARTICLE_NOT_FOUND_BY_SLUG, article.getSlug());
     }
@@ -345,9 +367,62 @@ class CommentServiceImplTest {
 
         // when
         // then
-        assertThatThrownBy(() -> underTest.deleteComment(article.getSlug(), commentEntity.getId()))
+        assertThatThrownBy(() -> underTest.deleteComment(article.getSlug(), commentEntity.getId(), account.getId()))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining(COMMENT_NOT_FOUND_BY_SLUG_AND_ID, commentEntity.getId(), article.getSlug());
+    }
+
+    @Test
+    void itShouldNotDeleteComment_whenWrongOwnerAndThrowForbidden() {
+        // given
+        AccountEntity account = AccountEntity.builder()
+                .id(1L)
+                .username("user1")
+                .email("user1@gmail.com")
+                .password("pass1")
+                .bio("bio")
+                .image("image")
+                .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
+                .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
+                .build();
+        AccountEntity account2 = AccountEntity.builder()
+                .id(2L)
+                .username("user2")
+                .email("user2@gmail.com")
+                .password("pass2")
+                .bio("bio")
+                .image("image")
+                .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
+                .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
+                .build();
+        ArticleEntity article = ArticleEntity.builder()
+                .id(1L)
+                .slug("article-1")
+                .title("article 1")
+                .description("description")
+                .body("body")
+                .author(account)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+        CommentEntity commentEntity = CommentEntity.builder()
+                .id(1L)
+                .body("body")
+                .article(article)
+                .account(account2)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.of(article));
+        when(commentRepository.findByIdAndArticle(commentEntity.getId(), article)).thenReturn(Optional.of(commentEntity));
+        when(profileService.getAccountById(account.getId())).thenReturn(account);
+
+        // when
+        // then
+        assertThatThrownBy(() -> underTest.deleteComment(article.getSlug(), commentEntity.getId(), account.getId()))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessageContaining(IS_NOT_AN_OWNER_OF_COMMENT, commentEntity.getId(), account.getUsername());
     }
 
 }
