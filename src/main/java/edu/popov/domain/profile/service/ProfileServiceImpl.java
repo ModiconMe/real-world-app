@@ -30,6 +30,9 @@ public class ProfileServiceImpl implements ProfileService {
     private static final String ACCOUNT_NOT_FOUND_BY_USERNAME = "Account with username %s is not exist";
     private static final String ACCOUNT_NOT_FOUND_BY_ID = "Account with id %d is not exist";
 
+    /**
+     * Show profile info
+     */
     @Override
     public ProfileDTO getProfile(String username, Long id) {
         AccountEntity profile = getAccountByUsername(username);
@@ -48,6 +51,9 @@ public class ProfileServiceImpl implements ProfileService {
         return profileDTO;
     }
 
+    /**
+     * Follow profile and now profile updated will be in our feed.
+     */
     @Override
     @Transactional
     public ProfileDTO followProfile(String username, Long id) {
@@ -78,6 +84,9 @@ public class ProfileServiceImpl implements ProfileService {
         return followedProfile;
     }
 
+    /**
+     * Unfollow profile.
+     */
     @Override
     @Transactional
     public ProfileDTO unfollowProfile(String username, Long id) {
@@ -120,6 +129,9 @@ public class ProfileServiceImpl implements ProfileService {
         return optionalProfile.get();
     }
 
+    /**
+     * Get users followers.
+     */
     @Override
     @Transactional
     public List<ProfileDTO> getFollowers(Long id) {
@@ -128,6 +140,9 @@ public class ProfileServiceImpl implements ProfileService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Get users followings.
+     */
     @Override
     public List<ProfileDTO> getFollowings(Long id) {
         return followRelationRepository.findFollowings(getAccountById(id))

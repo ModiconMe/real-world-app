@@ -5,9 +5,6 @@ import edu.popov.domain.tag.entity.TagEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"id"})
-@ToString(exclude = {"tags", "favoriteList"})
 @Getter
 @Setter
 @Entity(name = "Article")
@@ -60,26 +56,20 @@ public class ArticleEntity {
     @Column(
             name = "created_at",
             nullable = false
-//            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
     )
     private ZonedDateTime createdAt;
     @Column(
             name = "updated_at",
             nullable = false
-//            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
     )
     private ZonedDateTime updatedAt;
 
     public void addTag(TagEntity tag) {
-        if (tags == null)
-            tags = new ArrayList<>();
         tags.add(tag);
         tag.setArticle(this);
     }
 
     public void addFavorite(FavoriteEntity favorite) {
-        if (favoriteList == null)
-            favoriteList = new ArrayList<>();
         favoriteList.add(favorite);
         favorite.setArticle(this);
     }

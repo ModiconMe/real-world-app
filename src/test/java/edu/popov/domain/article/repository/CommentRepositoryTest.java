@@ -58,8 +58,8 @@ class CommentRepositoryTest {
                 .body("body")
                 .article(article)
                 .account(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         underTest.save(commentEntity);
 
@@ -102,8 +102,8 @@ class CommentRepositoryTest {
                 .body("body")
                 .article(article)
                 .account(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         underTest.save(commentEntity);
 

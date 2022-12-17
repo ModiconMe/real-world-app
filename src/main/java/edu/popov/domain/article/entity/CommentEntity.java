@@ -5,14 +5,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"id"})
-@ToString
 @Getter
-@Setter
 @Entity(name = "Comment")
 @Table(name = "comment")
 public class CommentEntity {
@@ -42,16 +41,14 @@ public class CommentEntity {
 
     @Column(
             name = "created_at",
-            nullable = false,
-            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
+            nullable = false
     )
-    private LocalDateTime createdAt;
+    private ZonedDateTime createdAt;
 
     @Column(
             name = "updated_at",
-            nullable = false,
-            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
+            nullable = false
     )
-    private LocalDateTime updatedAt;
+    private ZonedDateTime updatedAt;
 
 }

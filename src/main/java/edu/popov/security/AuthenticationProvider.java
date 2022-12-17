@@ -8,9 +8,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+/**
+ * Authenticate user by jwt token (username from token)
+ */
 @Component
 @RequiredArgsConstructor
 public class AuthenticationProvider {
+
     private final UserDetailsService userDetailsService;
 
     public Authentication getAuthentication(String username) {

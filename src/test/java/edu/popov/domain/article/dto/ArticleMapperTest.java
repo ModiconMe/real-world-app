@@ -5,7 +5,6 @@ import edu.popov.domain.article.entity.ArticleEntity;
 import edu.popov.domain.article.entity.FavoriteEntity;
 import edu.popov.domain.article.entity.FavoriteEntityId;
 import edu.popov.domain.profile.dto.ProfileDTO;
-import edu.popov.domain.profile.dto.ProfileMapper;
 import edu.popov.domain.profile.service.ProfileService;
 import edu.popov.domain.tag.entity.TagEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,16 +25,13 @@ import static org.mockito.Mockito.when;
 class ArticleMapperTest {
 
     @Mock
-    private ProfileMapper profileMapper;
-
-    @Mock
     private ProfileService profileService;
 
     private ArticleMapper articleMapper;
 
     @BeforeEach
     void setUp() {
-        articleMapper = new ArticleMapper(profileMapper, profileService);
+        articleMapper = new ArticleMapper(profileService);
     }
 
     @Test

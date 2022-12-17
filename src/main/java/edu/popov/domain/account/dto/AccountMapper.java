@@ -18,4 +18,5 @@ public class AccountMapper {
     public AccountDTO mapToAccountDTO(AccountEntity account) {
         return mapper.map(account, AccountDTO.class);
     }
+
 }

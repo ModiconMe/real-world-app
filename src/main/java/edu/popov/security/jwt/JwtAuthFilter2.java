@@ -16,7 +16,9 @@ import java.io.IOException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-
+/**
+ * Old implementation
+ */
 @RequiredArgsConstructor
 public class JwtAuthFilter2 extends OncePerRequestFilter {
 

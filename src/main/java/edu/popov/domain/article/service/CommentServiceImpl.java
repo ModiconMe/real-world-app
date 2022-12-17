@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import static java.lang.String.format;
 
@@ -31,20 +32,23 @@ public class CommentServiceImpl implements CommentService {
     private static final String COMMENT_NOT_FOUND_BY_SLUG_AND_ID = "Comment with id %d of article with slug %s is not found";
     private static final String IS_NOT_AN_OWNER_OF_COMMENT = "Comment with id %d is not owned by %s";
 
+    /**
+     * Add comment to article (Login required)
+     */
     @Override
     @Transactional
-    public CommentDTO.SingleComment addComment(String slug, CommentDTO.Create comment, Long id) {
+    public CommentDTO.SingleComment addComment(String slug, CommentDTO.Create comment, Long commentatorId) {
         ArticleEntity article = articleRepository.findBySlug(slug)
                 .orElseThrow(() -> new NotFoundException(format(ARTICLE_NOT_FOUND_BY_SLUG, slug)));
 
-        AccountEntity account = profileService.getAccountById(id);
+        AccountEntity account = profileService.getAccountById(commentatorId);
 
         CommentEntity commentEntity = CommentEntity.builder()
                 .body(comment.getBody())
                 .account(account)
                 .article(article)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         CommentEntity savedComment = commentRepository.save(commentEntity);
@@ -52,6 +56,9 @@ public class CommentServiceImpl implements CommentService {
         return new CommentDTO.SingleComment(commentMapper.mapToCommentDTO(savedComment));
     }
 
+    /**
+     * Get comments by article slug.
+     */
     @Override
     @Transactional(readOnly = true)
     public CommentDTO.MultipleComments getComments(String slug) {
@@ -66,6 +73,9 @@ public class CommentServiceImpl implements CommentService {
                 .build();
     }
 
+    /**
+     * Users can delete their comments (Login required).
+     */
     @Override
     @Transactional
     public void deleteComment(String slug, Long commentId, Long userId) {

@@ -5,12 +5,10 @@ import edu.popov.domain.article.entity.FavoriteEntity;
 import edu.popov.domain.profile.dto.ProfileMapper;
 import edu.popov.domain.profile.service.ProfileService;
 import edu.popov.domain.tag.entity.TagEntity;
-import edu.popov.security.AccountDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,7 +16,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ArticleMapper {
 
-    private final ProfileMapper profileMapper;
     private final ProfileService profileService;
 
     public ArticleDTO mapToSingleArticleDTO(ArticleEntity article, Long userId) {
@@ -27,6 +24,7 @@ public class ArticleMapper {
         List<String> tags = new ArrayList<>();
         if (Objects.nonNull(article.getTags()))
             tags = article.getTags().stream().map(TagEntity::getTagName).toList();
+
         return ArticleDTO.builder()
                         .slug(article.getSlug())
                         .title(article.getTitle())
@@ -46,4 +44,5 @@ public class ArticleMapper {
                 mapToSingleArticleDTO(entity, accountDetailsId)
         ).toList();
     }
+
 }

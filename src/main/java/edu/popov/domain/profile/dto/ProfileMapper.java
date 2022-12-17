@@ -15,6 +15,9 @@ public class ProfileMapper {
         return mapper.map(account, ProfileDTO.class);
     }
 
+    /**
+     * Return users followings -> field following=true
+     */
     public ProfileDTO mapFollowingsToProfileDTO(AccountEntity account) {
         ProfileDTO follow = mapper.map(account, ProfileDTO.class);
         follow.setFollowing(true);

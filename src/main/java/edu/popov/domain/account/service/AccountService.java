@@ -1,7 +1,6 @@
 package edu.popov.domain.account.service;
 
 import edu.popov.domain.account.dto.AccountDTO;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public interface AccountService {
 
@@ -9,4 +8,5 @@ public interface AccountService {
     AccountDTO auth(AccountDTO.Auth request);
     AccountDTO update(Long id, AccountDTO.Update request);
     AccountDTO currentUser(Long userId);
+
 }

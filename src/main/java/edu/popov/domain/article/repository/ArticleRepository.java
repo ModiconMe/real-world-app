@@ -2,9 +2,6 @@ package edu.popov.domain.article.repository;
 
 import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.article.entity.ArticleEntity;
-import edu.popov.domain.article.entity.FavoriteEntity;
-import edu.popov.domain.article.entity.FavoriteEntityId;
-import edu.popov.domain.tag.entity.TagEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

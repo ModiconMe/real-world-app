@@ -18,4 +18,5 @@ public class TagController {
     public TagDTO.TagList getTags() {
         return TagDTO.TagList.builder().tags(tagService.getTags()).build();
     }
+
 }

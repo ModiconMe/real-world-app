@@ -9,12 +9,10 @@ import edu.popov.domain.article.service.CommentService;
 import edu.popov.security.AccountDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -40,8 +38,9 @@ public class ArticleController {
         return articleService.createArticle(articleDTO.getArticle(), accountDetails.id());
     }
 
+    // title = i love dragons -> slug = i-love-dragons
     @GetMapping("/{slug}")
-    public ArticleDTO.SingleArticle<ArticleDTO> getArticleSlug(
+    public ArticleDTO.SingleArticle<ArticleDTO> getArticleBySlug(
             @PathVariable("slug") String slug,
             @AuthenticationPrincipal AccountDetails accountDetails) {
 
@@ -53,7 +52,7 @@ public class ArticleController {
     }
 
     @PutMapping("/{slug}")
-    public ArticleDTO.SingleArticle<ArticleDTO> updateArticle(
+    public ArticleDTO.SingleArticle<ArticleDTO> updateArticleBySlug(
             @PathVariable("slug") String slug,
             @RequestBody ArticleDTO.SingleArticle<ArticleDTO.Update> update,
             @AuthenticationPrincipal AccountDetails accountDetails
@@ -63,14 +62,14 @@ public class ArticleController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{slug}")
-    public void deleteArticle(
+    public void deleteArticleBySlug(
             @PathVariable("slug") String slug,
             @AuthenticationPrincipal AccountDetails accountDetails) {
         articleService.deleteArticle(slug, accountDetails.getUsername());
     }
 
     @PostMapping("/{slug}/favorite")
-    public ArticleDTO.SingleArticle<ArticleDTO> favoriteArticle(
+    public ArticleDTO.SingleArticle<ArticleDTO> favoriteArticleBySlug(
             @PathVariable("slug") String slug,
             @AuthenticationPrincipal AccountDetails accountDetails
     ) {
@@ -78,7 +77,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{slug}/favorite")
-    public ArticleDTO.SingleArticle<ArticleDTO> unfavoriteArticle(
+    public ArticleDTO.SingleArticle<ArticleDTO> unfavoriteArticleBySlug(
             @PathVariable("slug") String slug,
             @AuthenticationPrincipal AccountDetails accountDetails
     ) {
@@ -86,7 +85,7 @@ public class ArticleController {
     }
 
     @GetMapping("/feed")
-    public ArticleDTO.MultipleArticle getArticlesByFeed(
+    public ArticleDTO.MultipleArticle getUsersFeed(
             @ModelAttribute FeedParams feedParams,
             @AuthenticationPrincipal AccountDetails accountDetails
     ) {
@@ -98,7 +97,7 @@ public class ArticleController {
     }
 
     @PostMapping("/{slug}/comments")
-    public CommentDTO.SingleComment addComment(
+    public CommentDTO.SingleComment addCommentToArticle(
             @PathVariable("slug") String slug,
             @RequestBody CommentDTO.Create comment,
             @AuthenticationPrincipal AccountDetails accountDetails

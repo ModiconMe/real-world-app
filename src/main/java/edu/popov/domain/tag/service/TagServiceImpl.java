@@ -13,6 +13,9 @@ public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
 
+    /**
+     * Return list of existing tags
+     */
     @Override
     public List<String> getTags() {
         return tagRepository.findAll().stream()

@@ -1,12 +1,9 @@
 package edu.popov.domain.article.dto;
 
 import edu.popov.domain.account.dto.AccountMapper;
-import edu.popov.domain.article.entity.ArticleEntity;
 import edu.popov.domain.article.entity.CommentEntity;
-import edu.popov.domain.article.entity.FavoriteEntity;
 import edu.popov.domain.profile.dto.ProfileMapper;
 import edu.popov.domain.profile.service.ProfileService;
-import edu.popov.domain.tag.entity.TagEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

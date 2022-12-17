@@ -2,8 +2,6 @@ package edu.popov.domain.article.model;
 
 import lombok.*;
 
-import java.util.List;
-
 @Builder
 @Getter
 @Setter

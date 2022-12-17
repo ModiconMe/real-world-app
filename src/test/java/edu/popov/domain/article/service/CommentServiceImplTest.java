@@ -85,14 +85,14 @@ class CommentServiceImplTest {
                 .body("body")
                 .article(article)
                 .account(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentDTO commentDTO = CommentDTO.builder()
                 .body("body")
                 .author(profileDTO)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.of(article));
@@ -179,14 +179,14 @@ class CommentServiceImplTest {
                 .body("body")
                 .article(article)
                 .account(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentDTO commentDTO = CommentDTO.builder()
                 .body("body")
                 .author(profileDTO)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.of(article));
@@ -268,14 +268,14 @@ class CommentServiceImplTest {
                 .body("body")
                 .article(article)
                 .account(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentDTO commentDTO = CommentDTO.builder()
                 .body("body")
                 .author(profileDTO)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.of(article));
@@ -318,8 +318,8 @@ class CommentServiceImplTest {
                 .body("body")
                 .article(article)
                 .account(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.empty());
@@ -358,8 +358,8 @@ class CommentServiceImplTest {
                 .body("body")
                 .article(article)
                 .account(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.of(article));
@@ -410,8 +410,8 @@ class CommentServiceImplTest {
                 .body("body")
                 .article(article)
                 .account(account2)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.of(article));

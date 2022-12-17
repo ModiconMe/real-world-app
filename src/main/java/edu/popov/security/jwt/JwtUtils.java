@@ -2,7 +2,6 @@ package edu.popov.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +26,12 @@ public class JwtUtils {
     private final Key key;
     private final UserDetailsService userDetailsService;
 
+    /**
+     * Take secret key from app properties -> encrypt
+     * @param signKey secret key from application.yml
+     * @param userDetailsService user credentials (login, password, etc...)
+     * @throws Exception if secret key too short
+     */
     public JwtUtils(
             @Value("${jwt.secret-key}")String signKey,
             UserDetailsService userDetailsService
@@ -38,6 +43,11 @@ public class JwtUtils {
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Generate jwt token after authentication
+     * @param userDetails user credentials (login, password, etc...)
+     * @return jwt token as string
+     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder().setClaims(claims)
@@ -49,6 +59,10 @@ public class JwtUtils {
                 .signWith(key).compact();
     }
 
+    /**
+     * Check that token is not expired (application.yml set 24 hours) and token user is equals to authentication user
+     * @param token jwt token
+     */
     public boolean isTokenValid(String token) {
         boolean expired = isTokenExpired(token);
         Optional<UserDetails> userDetails = Optional.ofNullable(
@@ -56,11 +70,20 @@ public class JwtUtils {
         return (userDetails.isPresent() && !expired);
     }
 
+    /**
+     * Extract token owner username from jwt token
+     * @param token jwt token
+     * @return token owner username
+     */
     public String extractUsername(String token) {
         Claims claims = extractClaims(token);
         return claims.getSubject();
     }
 
+    /**
+     * Check that token is not expired (application.yml set 24 hours)
+     * @param token jwt token
+     */
     public boolean isTokenExpired(String token) {
         Claims claims = extractClaims(token);
         Instant now = Instant.now();
@@ -68,9 +91,12 @@ public class JwtUtils {
         return exp.before(Date.from(now));
     }
 
+    /**
+     * Extract encrypted information about token (owner, who issue, when issued and etc.)
+     * @param token jwt token
+     */
     public Claims extractClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
-
 
 }

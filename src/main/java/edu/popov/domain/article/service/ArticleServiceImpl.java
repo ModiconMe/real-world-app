@@ -23,9 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +44,9 @@ public class ArticleServiceImpl implements ArticleService {
     private static final String ARTICLE_ALREADY_EXISTS_BY_SLUG = "Article with slug %s is already exist";
     private static final String IS_NOT_AN_OWNER_OF_ARTICLE = "Article with slug %s is not owned by %s";
 
+    /**
+     * Create article and check that article with same slug is not exist
+     */
     @Override
     @Transactional
     public ArticleDTO.SingleArticle<ArticleDTO> createArticle(ArticleDTO articleDTO, Long userId) {
@@ -79,6 +79,9 @@ public class ArticleServiceImpl implements ArticleService {
                 articleRepository.save(article), userId));
     }
 
+    /**
+     * Return slug by slug
+     */
     @Override
     @Transactional(readOnly = true)
     public ArticleDTO.SingleArticle<ArticleDTO> getArticleBySlug(String slug, Long userId) {
@@ -91,8 +94,11 @@ public class ArticleServiceImpl implements ArticleService {
         return new ArticleDTO.SingleArticle<>(articleMapper.mapToSingleArticleDTO(article, userId));
     }
 
+    /**
+     * Update article by slug and check, that slug with the same name is not exist
+     */
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public ArticleDTO.SingleArticle<ArticleDTO> updateArticle(String slug, ArticleDTO.Update articleDTO, Long userId) {
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
         if (optionalArticle.isEmpty())
@@ -116,8 +122,11 @@ public class ArticleServiceImpl implements ArticleService {
         ));
     }
 
+    /**
+     * Delete your owner article (Login required).
+     */
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void deleteArticle(String slug, String username) {
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
 
@@ -132,6 +141,10 @@ public class ArticleServiceImpl implements ArticleService {
         throw new ForbiddenException(format(IS_NOT_AN_OWNER_OF_ARTICLE, slug, username));
     }
 
+    /**
+     * Get article by user filters (tags, author), also can set pagination and offset.
+     * Favorite article other users can be seen by set favorited filter (username)
+     */
     @Override
     @Transactional(readOnly = true)
     public ArticleDTO.MultipleArticle getArticlesByFilter(ArticleFilter articleFilter, AccountDetails user) {
@@ -165,6 +178,9 @@ public class ArticleServiceImpl implements ArticleService {
                 .build();
     }
 
+    /**
+     * Add article to favorite.
+     */
     @Override
     public ArticleDTO.SingleArticle<ArticleDTO> favoriteArticle(String slug, Long userId) {
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
@@ -192,6 +208,9 @@ public class ArticleServiceImpl implements ArticleService {
         return getArticleBySlug(slug, userId);
     }
 
+    /**
+     * Remove article from favorite
+     */
     @Override
     public ArticleDTO.SingleArticle<ArticleDTO> unfavoriteArticle(String slug, Long userId) {
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
@@ -214,6 +233,10 @@ public class ArticleServiceImpl implements ArticleService {
         return getArticleBySlug(slug, userId);
     }
 
+    /**
+     * For authenticated users we can show feed -> recent articles of followed profiles.
+     * Pagination and offset available.
+     */
     @Override
     @Transactional(readOnly = true)
     public ArticleDTO.MultipleArticle getArticlesByFeed(FeedParams feedParams, Long userId) {

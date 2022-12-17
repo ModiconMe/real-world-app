@@ -14,14 +14,16 @@
 Также:
 * [endpoints and json examples](https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints)
 * [api json answer formats](https://realworld-docs.netlify.app/docs/specs/backend-specs/api-response-format)
+* протестировать работоспособность с помощью официального [bash скрипта](#Test-scripts)
 
 ### Technology
 - Spring Boot 3.0.0 и Java 17
-- Spring Data JPA + Hibernate + H2 database ([запуск на PostgreSQL](#PostgreSQL))
+- Spring Data JPA + Hibernate + H2-database
 - Spring Security 6 + jwt
 - Spring Validation для валидации rest запросов
 - Jackson для сериализации и дессериализации запросов и ответов
-- JUnit 5 + AssertJ для тестирования
+- JUnit 5 + AssertJ + Mockito для тестирования
+- Docker для [запуска](#Docker-run) в контейнере из Dockerfile
 
 ### Getting started
 Требуется Java 17 или выше
@@ -39,10 +41,22 @@
 
     ./gradlew test
 
-Процент покрытия строк кода тестами 89%.
+Процент покрытия строк кода тестами 93%.
 ##### ![Test-coverage](test-coverage.png)
 
-### Docker run
+### Test-scripts
+
+Для полного тестирования api на соответствие спецификации протестируйте с помощью официального bash script
+
+`cd api-bash-test`
+
+Команда для запуска скрипта
+
+`APIURL=http://localhost:8080/api ./run-api-tests.sh`
+##### ![bash-script-result](bash-script-result.png)
+
+
+### Docker-run
 
 Убедитесь что Docker engine запущени командой `docker --version`. Если Docker
 не установлен, то [вот гайд по установке Docker](https://github.com/ModiconMe/docker/blob/main/installation.md).

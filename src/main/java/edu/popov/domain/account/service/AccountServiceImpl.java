@@ -9,8 +9,6 @@ import edu.popov.security.jwt.JwtUtils;
 import edu.popov.utils.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +32,6 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * Check that account are not exist by email and username, register new account.
-     *
-     * @param request dto for registration
-     * @return dto
      */
     @Override
     public AccountDTO registry(AccountDTO.Registration request) {
@@ -53,10 +48,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * Check that account exist by email, check for password
-     *
-     * @param request dto for auth
-     * @return dto
+     * Login user and generate jwt token
      */
     @Override
     public AccountDTO auth(AccountDTO.Auth request) {
@@ -77,10 +69,6 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * Update account
-     *
-     * @param id      of updated account
-     * @param request dto to update account
-     * @return dto
      */
     @Override
     @Transactional
@@ -109,6 +97,9 @@ public class AccountServiceImpl implements AccountService {
         return mapper.mapToAccountDTO(account);
     }
 
+    /**
+     * Return current user. Login required.
+     */
     @Override
     public AccountDTO currentUser(Long userId) {
         Optional<AccountEntity> optionalAccount = accountRepository.findById(userId);
