@@ -8,6 +8,7 @@ import edu.popov.domain.article.entity.ArticleEntity;
 import edu.popov.domain.article.entity.CommentEntity;
 import edu.popov.domain.article.repository.ArticleRepository;
 import edu.popov.domain.article.repository.CommentRepository;
+import edu.popov.domain.profile.dto.ProfileDTO;
 import edu.popov.domain.profile.service.ProfileService;
 import edu.popov.utils.exception.ForbiddenException;
 import edu.popov.utils.exception.NotFoundException;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,11 +62,11 @@ class CommentServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        AccountDTO accountDTO = AccountDTO.builder()
+        ProfileDTO profileDTO = ProfileDTO.builder()
                 .username("user1")
-                .email("user1@gmail.com")
                 .bio("bio")
                 .image("image")
+                .following(false)
                 .build();
         ArticleEntity article = ArticleEntity.builder()
                 .id(1L)
@@ -73,8 +75,8 @@ class CommentServiceImplTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentDTO.Create create = CommentDTO.Create.builder()
                 .body("body")
@@ -88,7 +90,7 @@ class CommentServiceImplTest {
                 .build();
         CommentDTO commentDTO = CommentDTO.builder()
                 .body("body")
-                .author(accountDTO)
+                .author(profileDTO)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -128,8 +130,8 @@ class CommentServiceImplTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentDTO.Create create = CommentDTO.Create.builder()
                 .body("body")
@@ -157,11 +159,11 @@ class CommentServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        AccountDTO accountDTO = AccountDTO.builder()
+        ProfileDTO profileDTO = ProfileDTO.builder()
                 .username("user1")
-                .email("user1@gmail.com")
                 .bio("bio")
                 .image("image")
+                .following(false)
                 .build();
         ArticleEntity article = ArticleEntity.builder()
                 .id(1L)
@@ -170,8 +172,8 @@ class CommentServiceImplTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentEntity commentEntity = CommentEntity.builder()
                 .body("body")
@@ -182,7 +184,7 @@ class CommentServiceImplTest {
                 .build();
         CommentDTO commentDTO = CommentDTO.builder()
                 .body("body")
-                .author(accountDTO)
+                .author(profileDTO)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -220,8 +222,8 @@ class CommentServiceImplTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.empty());
@@ -246,11 +248,11 @@ class CommentServiceImplTest {
                 .createdAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .updatedAt(LocalDateTime.of(2022, 12, 11, 17, 20, 20))
                 .build();
-        AccountDTO accountDTO = AccountDTO.builder()
+        ProfileDTO profileDTO = ProfileDTO.builder()
                 .username("user1")
-                .email("user1@gmail.com")
                 .bio("bio")
                 .image("image")
+                .following(false)
                 .build();
         ArticleEntity article = ArticleEntity.builder()
                 .id(1L)
@@ -259,8 +261,8 @@ class CommentServiceImplTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentEntity commentEntity = CommentEntity.builder()
                 .body("body")
@@ -271,7 +273,7 @@ class CommentServiceImplTest {
                 .build();
         CommentDTO commentDTO = CommentDTO.builder()
                 .body("body")
-                .author(accountDTO)
+                .author(profileDTO)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -279,7 +281,6 @@ class CommentServiceImplTest {
         when(articleRepository.findBySlug(article.getSlug())).thenReturn(Optional.of(article));
         when(commentRepository.findByIdAndArticle(commentEntity.getId(), article)).thenReturn(Optional.of(commentEntity));
         when(profileService.getAccountById(account.getId())).thenReturn(account);
-        when(commentMapper.mapToCommentDTO(commentEntity)).thenReturn(commentDTO);
 
         // when
         underTest.deleteComment(article.getSlug(), commentEntity.getId(), account.getId());
@@ -288,7 +289,6 @@ class CommentServiceImplTest {
         verify(articleRepository, times(1)).findBySlug(article.getSlug());
         verify(commentRepository, times(1)).findByIdAndArticle(commentEntity.getId(), article);
         verify(commentRepository, times(1)).deleteById(commentEntity.getId());
-        verify(commentMapper, times(1)).mapToCommentDTO(commentEntity);
     }
 
     @Test
@@ -311,8 +311,8 @@ class CommentServiceImplTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentEntity commentEntity = CommentEntity.builder()
                 .body("body")
@@ -351,8 +351,8 @@ class CommentServiceImplTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentEntity commentEntity = CommentEntity.builder()
                 .body("body")
@@ -402,8 +402,8 @@ class CommentServiceImplTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         CommentEntity commentEntity = CommentEntity.builder()
                 .id(1L)

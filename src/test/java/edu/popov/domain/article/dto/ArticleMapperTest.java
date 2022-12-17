@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,8 +59,8 @@ class ArticleMapperTest {
                 .description("desc")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.of(2022, 11, 10, 12, 12, 12))
-                .updatedAt(LocalDateTime.of(2022, 11, 10, 12, 12, 12))
+                .createdAt(ZonedDateTime.of(2022, 11, 10, 12, 12, 12, 10, ZoneId.systemDefault()))
+                .updatedAt(ZonedDateTime.of(2022, 11, 10, 12, 12, 12, 10, ZoneId.systemDefault()))
                 .build();
 
         TagEntity tag1 = TagEntity.builder()
@@ -101,12 +103,12 @@ class ArticleMapperTest {
                 .author(profileDTO)
                 .favoritesCount(2L)
                 .favorited(true)
-                .tags(List.of("tag1", "tag2"))
-                .createdAt(LocalDateTime.of(2022, 11, 10, 12, 12, 12))
-                .updatedAt(LocalDateTime.of(2022, 11, 10, 12, 12, 12))
+                .tagList(List.of("tag1", "tag2"))
+                .createdAt(ZonedDateTime.of(2022, 11, 10, 12, 12, 12, 10, ZoneId.systemDefault()))
+                .updatedAt(ZonedDateTime.of(2022, 11, 10, 12, 12, 12, 10, ZoneId.systemDefault()))
                 .build();
         // when
-        ArticleDTO expected = articleMapper.mapToArticleDTO(articleEntity, 1L);
+        ArticleDTO expected = articleMapper.mapToSingleArticleDTO(articleEntity, 1L);
 
         // then
         assertThat(articleDTO).isEqualTo(expected);

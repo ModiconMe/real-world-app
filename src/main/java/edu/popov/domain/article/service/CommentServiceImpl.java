@@ -33,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentDTO addComment(String slug, CommentDTO.Create comment, Long id) {
+    public CommentDTO.SingleComment addComment(String slug, CommentDTO.Create comment, Long id) {
         ArticleEntity article = articleRepository.findBySlug(slug)
                 .orElseThrow(() -> new NotFoundException(format(ARTICLE_NOT_FOUND_BY_SLUG, slug)));
 
@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
 
         CommentEntity savedComment = commentRepository.save(commentEntity);
 
-        return commentMapper.mapToCommentDTO(savedComment);
+        return new CommentDTO.SingleComment(commentMapper.mapToCommentDTO(savedComment));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentDTO deleteComment(String slug, Long commentId, Long userId) {
+    public void deleteComment(String slug, Long commentId, Long userId) {
         ArticleEntity article = articleRepository.findBySlug(slug)
                 .orElseThrow(() -> new NotFoundException(format(ARTICLE_NOT_FOUND_BY_SLUG, slug)));
 
@@ -79,7 +79,7 @@ public class CommentServiceImpl implements CommentService {
 
         if (commentEntity.getAccount().getUsername().equals(user.getUsername())) {
             commentRepository.deleteById(commentId);
-            return commentMapper.mapToCommentDTO(commentEntity);
+            return;
         }
 
         throw new ForbiddenException(format(IS_NOT_AN_OWNER_OF_COMMENT, commentId, user.getUsername()));

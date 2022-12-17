@@ -1,34 +1,23 @@
 package edu.popov.utils;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+@Getter
+@JsonTypeName("errors")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 public class ApiException {
-    private final String message;
-    private final Class<?> aClass;
-    private HttpStatus httpStatus;
 
-    public ApiException(String message, Class<?> aClass, HttpStatus httpStatus) {
-        this.message = message;
-        this.aClass = aClass;
-        this.httpStatus = httpStatus;
-    }
+    private final List<String> body = new ArrayList<>();
 
-    public String getMessage() {
-        return message;
-    }
-
-    public Class getaClass() {
-        return aClass;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    public void setHttpStatus(HttpStatus httpStatus) {
-        this.httpStatus = httpStatus;
+    public ApiException(String message) {
+        this.body.add(message);
     }
 
 }

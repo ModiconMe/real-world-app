@@ -8,10 +8,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/profiles")
+@RequestMapping("api/profiles")
 public class ProfileController {
 
     private final ProfileService profileService;
@@ -21,7 +22,12 @@ public class ProfileController {
             @PathVariable("username") String username,
             @AuthenticationPrincipal AccountDetails accountDetails
     ) {
-        return profileService.getProfile(username, accountDetails.id());
+
+        Long id = null;
+        if (!Objects.isNull(accountDetails))
+            id = accountDetails.id();
+
+        return profileService.getProfile(username, id);
     }
 
     @PostMapping("/{username}/follow")

@@ -1,5 +1,9 @@
 package edu.popov.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.convention.NameTokenizers;
@@ -19,9 +23,8 @@ public class ApplicationConfig {
                 .setDestinationNamingConvention(NamingConventions.JAVABEANS_MUTATOR)
                 .setSourceNameTokenizer(NameTokenizers.CAMEL_CASE)
                 .setDestinationNameTokenizer(NameTokenizers.CAMEL_CASE);
-//        mapper.createTypeMap(Account.class, AccountDTO.class)
-//                .addMapping(m -> mapper.map(Account::getUsername, AccountDTO::set)));
         return mapper;
     }
+
 
 }

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,8 +62,8 @@ class ArticleRepositoryTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         accountRepository.saveAndFlush(account);
         underTest.save(article);
@@ -95,8 +96,8 @@ class ArticleRepositoryTest {
                 .description("description")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         accountRepository.saveAndFlush(account);
         underTest.save(article);
@@ -140,8 +141,8 @@ class ArticleRepositoryTest {
                 .description("description")
                 .body("body")
                 .author(account1)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         String filterTag = "tag1";
@@ -205,8 +206,8 @@ class ArticleRepositoryTest {
                 .description("description")
                 .body("body")
                 .author(account1)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         ArticleEntity article2 = ArticleEntity.builder()
                 .slug("article-2")
@@ -214,8 +215,8 @@ class ArticleRepositoryTest {
                 .description("description")
                 .body("body")
                 .author(account2)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         TagEntity tag1 = TagEntity.builder()

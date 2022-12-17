@@ -27,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,8 +79,8 @@ class ArticleServiceImplTest {
                 .description("desc")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         ProfileDTO profileDTO = ProfileDTO.builder()
                 .username("user1")
@@ -89,13 +90,13 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .build();
 
         when(articleRepository.findBySlug("title")).thenReturn(Optional.empty());
         when(profileService.getAccountById(1L)).thenReturn(account);
         when(articleRepository.save(any(ArticleEntity.class))).thenReturn(articleEntity);
-        when(articleMapper.mapToArticleDTO(any(ArticleEntity.class), anyLong())).thenReturn(articleDTO);
+        when(articleMapper.mapToSingleArticleDTO(any(ArticleEntity.class), anyLong())).thenReturn(articleDTO);
 
         // when
         underTest.createArticle(articleDTO, 1L);
@@ -104,7 +105,7 @@ class ArticleServiceImplTest {
         verify(articleRepository, times(1)).findBySlug("title");
         verify(profileService, times(1)).getAccountById(1L);
         verify(articleRepository, times(1)).save(any(ArticleEntity.class));
-        verify(articleMapper, times(1)).mapToArticleDTO(any(ArticleEntity.class), anyLong());
+        verify(articleMapper, times(1)).mapToSingleArticleDTO(any(ArticleEntity.class), anyLong());
     }
 
     @Test
@@ -124,8 +125,8 @@ class ArticleServiceImplTest {
                 .description("desc")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         ProfileDTO profileDTO = ProfileDTO.builder()
                 .username("user1")
@@ -135,7 +136,7 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .build();
 
         when(articleRepository.findBySlug("title")).thenReturn(Optional.of(articleEntity));
@@ -165,27 +166,27 @@ class ArticleServiceImplTest {
                 .description("desc")
                 .body("body")
                 .author(account)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
         ArticleDTO articleDTO = ArticleDTO.builder()
                 .slug("title")
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .build();
 
         when(articleRepository.findBySlug(slug)).thenReturn(Optional.of(articleEntity));
-        when(articleMapper.mapToArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
+        when(articleMapper.mapToSingleArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
 
         // when
-        ArticleDTO expected = underTest.getArticleBySlug(slug, 1L);
+        ArticleDTO.SingleArticle<ArticleDTO> expected = underTest.getArticleBySlug(slug, 1L);
 
         // then
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(articleRepository).findBySlug(captor.capture());
-        assertThat(expected.getSlug()).isEqualTo(captor.getValue());
+        assertThat(expected.getArticle().getSlug()).isEqualTo(captor.getValue());
     }
 
     @Test
@@ -236,12 +237,12 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .build();
 
         when(articleRepository.findBySlug("title")).thenReturn(Optional.of(articleEntity1));
         when(articleRepository.save(articleEntity2)).thenReturn(articleEntity2);
-        when(articleMapper.mapToArticleDTO(articleEntity2, 1L)).thenReturn(articleDTO);
+        when(articleMapper.mapToSingleArticleDTO(articleEntity2, 1L)).thenReturn(articleDTO);
 
         // when
         underTest.updateArticle("title", articleDTOUpdate, 1L);
@@ -249,7 +250,7 @@ class ArticleServiceImplTest {
         // then
         verify(articleRepository, times(1)).findBySlug("title");
         verify(articleRepository, times(1)).save(articleEntity2);
-        verify(articleMapper, times(1)).mapToArticleDTO(articleEntity2, 1L);
+        verify(articleMapper, times(1)).mapToSingleArticleDTO(articleEntity2, 1L);
     }
 
     @Test
@@ -359,7 +360,7 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .build();
         ArticleFilter articleFilter = ArticleFilter.builder()
                 .author("user1")
@@ -377,7 +378,7 @@ class ArticleServiceImplTest {
         when(profileService.getAccountByUsername(articleFilter.getFavorited())).thenReturn(account);
         List<ArticleEntity> articleEntities = List.of(articleEntity1);
         when(articleRepository.findByFilter(articleFilter.getTag(), articleFilter.getAuthor(), account, pageable)).thenReturn(articleEntities);
-        when(articleMapper.mapToArticleDTOList(articleEntities, 1L)).thenReturn(List.of(articleDTO));
+        when(articleMapper.mapToMultipleArticleDTOList(articleEntities, 1L)).thenReturn(List.of(articleDTO));
 
         // when
         underTest.getArticlesByFilter(articleFilter, accountDetails);
@@ -385,7 +386,7 @@ class ArticleServiceImplTest {
         // then
         verify(profileService, times(1)).getAccountByUsername(articleFilter.getFavorited());
         verify(articleRepository, times(1)).findByFilter(articleFilter.getTag(), articleFilter.getAuthor(), account, pageable);
-        verify(articleMapper, times(1)).mapToArticleDTOList(articleEntities, 1L);
+        verify(articleMapper, times(1)).mapToMultipleArticleDTOList(articleEntities, 1L);
     }
 
     @Test
@@ -411,7 +412,7 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .build();
         ArticleFilter articleFilter = ArticleFilter.builder()
                 .author("user1")
@@ -429,7 +430,7 @@ class ArticleServiceImplTest {
         when(profileService.getAccountByUsername(articleFilter.getFavorited())).thenReturn(null);
         List<ArticleEntity> articleEntities = List.of(articleEntity1);
         when(articleRepository.findByFilter(articleFilter.getTag(), articleFilter.getAuthor(), null, pageable)).thenReturn(articleEntities);
-        when(articleMapper.mapToArticleDTOList(articleEntities, 1L)).thenReturn(List.of(articleDTO));
+        when(articleMapper.mapToMultipleArticleDTOList(articleEntities, 1L)).thenReturn(List.of(articleDTO));
 
         // when
         underTest.getArticlesByFilter(articleFilter, accountDetails);
@@ -437,7 +438,7 @@ class ArticleServiceImplTest {
         // then
         verify(profileService, times(1)).getAccountByUsername(articleFilter.getFavorited());
         verify(articleRepository, times(1)).findByFilter(articleFilter.getTag(), articleFilter.getAuthor(), null, pageable);
-        verify(articleMapper, times(1)).mapToArticleDTOList(articleEntities, 1L);
+        verify(articleMapper, times(1)).mapToMultipleArticleDTOList(articleEntities, 1L);
     }
 
     @Test
@@ -464,7 +465,7 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .favorited(false)
                 .build();
 
@@ -483,7 +484,7 @@ class ArticleServiceImplTest {
         when(profileService.getAccountById(user.getId())).thenReturn(user);
         when(favoriteRepository.findById(favoriteEntityId)).thenReturn(Optional.empty());
         when(favoriteRepository.save(favorite)).thenReturn(favorite);
-        when(articleMapper.mapToArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
+        when(articleMapper.mapToSingleArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
 
         // when
         underTest.favoriteArticle(articleEntity.getSlug(), 1L);
@@ -547,7 +548,7 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .favorited(false)
                 .build();
 
@@ -565,7 +566,7 @@ class ArticleServiceImplTest {
         when(articleRepository.findBySlug(articleEntity.getSlug())).thenReturn(Optional.of(articleEntity));
         when(profileService.getAccountById(user.getId())).thenReturn(user);
         when(favoriteRepository.findById(favoriteEntityId)).thenReturn(Optional.of(favorite));
-        when(articleMapper.mapToArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
+        when(articleMapper.mapToSingleArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
 
         // when
         underTest.favoriteArticle(articleEntity.getSlug(), 1L);
@@ -601,7 +602,7 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .favorited(false)
                 .build();
 
@@ -619,7 +620,7 @@ class ArticleServiceImplTest {
         when(articleRepository.findBySlug(articleEntity.getSlug())).thenReturn(Optional.of(articleEntity));
         when(profileService.getAccountById(user.getId())).thenReturn(user);
         when(favoriteRepository.findById(favoriteEntityId)).thenReturn(Optional.of(favorite));
-        when(articleMapper.mapToArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
+        when(articleMapper.mapToSingleArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
 
         // when
         underTest.unfavoriteArticle(articleEntity.getSlug(), 1L);
@@ -683,7 +684,7 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .favorited(false)
                 .build();
 
@@ -701,7 +702,7 @@ class ArticleServiceImplTest {
         when(articleRepository.findBySlug(articleEntity.getSlug())).thenReturn(Optional.of(articleEntity));
         when(profileService.getAccountById(user.getId())).thenReturn(user);
         when(favoriteRepository.findById(favoriteEntityId)).thenReturn(Optional.empty());
-        when(articleMapper.mapToArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
+        when(articleMapper.mapToSingleArticleDTO(articleEntity, 1L)).thenReturn(articleDTO);
 
         // when
         underTest.unfavoriteArticle(articleEntity.getSlug(), 1L);
@@ -736,7 +737,7 @@ class ArticleServiceImplTest {
                 .title("title")
                 .description("desc")
                 .body("body")
-                .tags(List.of("tag1", "tag2"))
+                .tagList(List.of("tag1", "tag2"))
                 .build();
         FeedParams feedParams = FeedParams.builder()
                 .limit(1)
@@ -749,7 +750,7 @@ class ArticleServiceImplTest {
         when(profileService.getAccountById(account.getId())).thenReturn(account);
         List<ArticleEntity> articleEntities = List.of(articleEntity1);
         when(articleRepository.findByFeed(account, pageable)).thenReturn(articleEntities);
-        when(articleMapper.mapToArticleDTOList(articleEntities, account.getId())).thenReturn(List.of(articleDTO));
+        when(articleMapper.mapToMultipleArticleDTOList(articleEntities, account.getId())).thenReturn(List.of(articleDTO));
 
         // when
         underTest.getArticlesByFeed(feedParams, account.getId());
@@ -757,7 +758,7 @@ class ArticleServiceImplTest {
         // then
         verify(profileService, times(1)).getAccountById(account.getId());
         verify(articleRepository, times(1)).findByFeed(account, pageable);
-        verify(articleMapper, times(1)).mapToArticleDTOList(articleEntities, account.getId());
+        verify(articleMapper, times(1)).mapToMultipleArticleDTOList(articleEntities, account.getId());
     }
 
 }

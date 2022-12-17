@@ -8,12 +8,17 @@ import edu.popov.domain.article.service.ArticleService;
 import edu.popov.domain.article.service.CommentService;
 import edu.popov.security.AccountDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/articles")
+@RequestMapping("api/articles")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -28,31 +33,44 @@ public class ArticleController {
     }
 
     @PostMapping
-    public ArticleDTO createArticle(@RequestBody ArticleDTO articleDTO, @AuthenticationPrincipal AccountDetails accountDetails) {
-        return articleService.createArticle(articleDTO, accountDetails.id());
+    public ArticleDTO.SingleArticle<ArticleDTO> createArticle(
+            @RequestBody ArticleDTO.SingleArticle<ArticleDTO> articleDTO,
+            @AuthenticationPrincipal AccountDetails accountDetails
+    ) {
+        return articleService.createArticle(articleDTO.getArticle(), accountDetails.id());
     }
 
     @GetMapping("/{slug}")
-    public ArticleDTO getArticleSlug(@PathVariable("slug") String slug, @AuthenticationPrincipal AccountDetails accountDetails) {
-        return articleService.getArticleBySlug(slug, accountDetails.id());
+    public ArticleDTO.SingleArticle<ArticleDTO> getArticleSlug(
+            @PathVariable("slug") String slug,
+            @AuthenticationPrincipal AccountDetails accountDetails) {
+
+        Long id = null;
+        if (!Objects.isNull(accountDetails))
+            id = accountDetails.id();
+
+        return articleService.getArticleBySlug(slug, id);
     }
 
     @PutMapping("/{slug}")
-    public ArticleDTO updateArticle(
+    public ArticleDTO.SingleArticle<ArticleDTO> updateArticle(
             @PathVariable("slug") String slug,
-            @RequestBody ArticleDTO.Update update, @AuthenticationPrincipal AccountDetails accountDetails) {
-        return articleService.updateArticle(slug, update, accountDetails.id());
+            @RequestBody ArticleDTO.SingleArticle<ArticleDTO.Update> update,
+            @AuthenticationPrincipal AccountDetails accountDetails
+    ) {
+        return articleService.updateArticle(slug, update.getArticle(), accountDetails.id());
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{slug}")
-    public Long deleteArticle(
+    public void deleteArticle(
             @PathVariable("slug") String slug,
             @AuthenticationPrincipal AccountDetails accountDetails) {
-        return articleService.deleteArticle(slug, accountDetails.getUsername());
+        articleService.deleteArticle(slug, accountDetails.getUsername());
     }
 
     @PostMapping("/{slug}/favorite")
-    public ArticleDTO favoriteArticle(
+    public ArticleDTO.SingleArticle<ArticleDTO> favoriteArticle(
             @PathVariable("slug") String slug,
             @AuthenticationPrincipal AccountDetails accountDetails
     ) {
@@ -60,7 +78,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{slug}/favorite")
-    public ArticleDTO unfavoriteArticle(
+    public ArticleDTO.SingleArticle<ArticleDTO> unfavoriteArticle(
             @PathVariable("slug") String slug,
             @AuthenticationPrincipal AccountDetails accountDetails
     ) {
@@ -72,11 +90,15 @@ public class ArticleController {
             @ModelAttribute FeedParams feedParams,
             @AuthenticationPrincipal AccountDetails accountDetails
     ) {
-        return articleService.getArticlesByFeed(feedParams, accountDetails.id());
+        Long id = null;
+        if (!Objects.isNull(accountDetails))
+            id = accountDetails.id();
+
+        return articleService.getArticlesByFeed(feedParams, id);
     }
 
     @PostMapping("/{slug}/comments")
-    public CommentDTO addComment(
+    public CommentDTO.SingleComment addComment(
             @PathVariable("slug") String slug,
             @RequestBody CommentDTO.Create comment,
             @AuthenticationPrincipal AccountDetails accountDetails
@@ -91,15 +113,14 @@ public class ArticleController {
         return commentService.getComments(slug);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{slug}/comments/{id}")
-    public CommentDTO deleteComment(
+    public void deleteComment(
             @PathVariable("slug") String slug,
             @PathVariable("id") Long commentId,
             @AuthenticationPrincipal AccountDetails accountDetails
     ) {
-        CommentDTO commentDTO = commentService.deleteComment(slug, commentId, accountDetails.id());
-        return commentDTO;
+        commentService.deleteComment(slug, commentId, accountDetails.id());
     }
-
 
 }

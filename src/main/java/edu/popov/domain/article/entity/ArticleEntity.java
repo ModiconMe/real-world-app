@@ -5,7 +5,10 @@ import edu.popov.domain.tag.entity.TagEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,16 +57,16 @@ public class ArticleEntity {
 
     @Column(
             name = "created_at",
-            nullable = false,
-            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
+            nullable = false
+//            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
     )
-    private LocalDateTime createdAt;
+    private ZonedDateTime createdAt;
     @Column(
             name = "updated_at",
-            nullable = false,
-            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
+            nullable = false
+//            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
     )
-    private LocalDateTime updatedAt;
+    private ZonedDateTime updatedAt;
 
     public void addTag(TagEntity tag) {
         if (tags == null)

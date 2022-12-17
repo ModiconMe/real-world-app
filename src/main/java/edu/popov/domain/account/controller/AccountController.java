@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/user")
+@RequestMapping("api/user")
 public class AccountController {
 
     private final AccountService accountService;
 
     @GetMapping
-    public UserDetails currentUser() {
-        return accountService.currentUser();
+    public AccountDTO currentUser(@AuthenticationPrincipal AccountDetails accountDetails) {
+        return accountService.currentUser(accountDetails.id());
     }
 
     @PutMapping

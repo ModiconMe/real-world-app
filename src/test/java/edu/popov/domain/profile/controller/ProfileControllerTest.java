@@ -59,7 +59,7 @@ class ProfileControllerTest {
                 .password("profiletest1")
                 .build();
         mockMvc.perform(
-                        post("/api/v1/users")
+                        post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request1))
                                 )
@@ -74,7 +74,7 @@ class ProfileControllerTest {
                 .password("profiletest2")
                 .build();
         mockMvc.perform(
-                        post("/api/v1/users")
+                        post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request2))
                                 )
@@ -89,7 +89,7 @@ class ProfileControllerTest {
                 .password("profiletest1")
                 .build();
         ResultActions perform1 = mockMvc.perform(
-                post("/api/v1/users/login")
+                post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth1))
                         )
@@ -103,7 +103,7 @@ class ProfileControllerTest {
                 .password("profiletest2")
                 .build();
         ResultActions perform2 = mockMvc.perform(
-                post("/api/v1/users/login")
+                post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth2))
                         )
@@ -120,13 +120,13 @@ class ProfileControllerTest {
         // when
         mockMvc
                 .perform(
-                        get("/api/v1/profiles/profiletest1")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                        get("/api/profiles/profiletest1")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username", Matchers.is("profiletest1")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.following", Matchers.is(false)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.profile.username", Matchers.is("profiletest1")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.profile.following", Matchers.is(false)));
     }
 
     @Test
@@ -136,8 +136,8 @@ class ProfileControllerTest {
         // when
         mockMvc
                 .perform(
-                        get("/api/v1/profiles/profiletest3")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                        get("/api/profiles/profiletest3")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -150,13 +150,13 @@ class ProfileControllerTest {
         // when
         mockMvc
                 .perform(
-                        post("/api/v1/profiles/profiletest2/follow")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                        post("/api/profiles/profiletest2/follow")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username", Matchers.is("profiletest2")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.following", Matchers.is(true)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.profile.username", Matchers.is("profiletest2")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.profile.following", Matchers.is(true)));
     }
 
     @Test
@@ -166,8 +166,8 @@ class ProfileControllerTest {
         // when
         mockMvc
                 .perform(
-                        post("/api/v1/profiles/profiletest3/follow")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                        post("/api/profiles/profiletest3/follow")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -180,13 +180,13 @@ class ProfileControllerTest {
         // when
         mockMvc
                 .perform(
-                        get("/api/v1/profiles/followings")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                        get("/api/profiles/followings")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].username", Matchers.is("profiletest2")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].following", Matchers.is(true)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].profile.username", Matchers.is("profiletest2")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].profile.following", Matchers.is(true)));
     }
 
     @Test
@@ -196,13 +196,13 @@ class ProfileControllerTest {
         // when
         mockMvc
                 .perform(
-                        get("/api/v1/profiles/followers")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer2)
+                        get("/api/profiles/followers")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer2)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].username", Matchers.is("profiletest1")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].following", Matchers.is(false)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].profile.username", Matchers.is("profiletest1")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].profile.following", Matchers.is(false)));
     }
 
     @Test
@@ -212,12 +212,12 @@ class ProfileControllerTest {
         // when
         mockMvc
                 .perform(
-                        delete("/api/v1/profiles/profiletest2/follow")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer1)
+                        delete("/api/profiles/profiletest2/follow")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username", Matchers.is("profiletest2")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.following", Matchers.is(false)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.profile.username", Matchers.is("profiletest2")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.profile.following", Matchers.is(false)));
     }
 }

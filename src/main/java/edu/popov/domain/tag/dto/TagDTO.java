@@ -1,6 +1,8 @@
 package edu.popov.domain.tag.dto;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +15,10 @@ public class TagDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonRootName("tags")
     public static class TagList {
+
+        @JsonProperty("tags")
         private List<String> tags;
+
     }
 }

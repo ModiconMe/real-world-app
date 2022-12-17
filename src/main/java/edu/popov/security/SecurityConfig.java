@@ -34,9 +34,9 @@ public class SecurityConfig {
         return http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers(HttpMethod.GET, "/api/v1/articles/feed").authenticated()
-                .requestMatchers(HttpMethod.POST,"/api/v1/users/**").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/v1/articles/**", "/api/v1/profiles/**", "/api/v1/tags").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/articles/feed").authenticated()
+                .requestMatchers(HttpMethod.POST,"/api/users/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/articles/**", "/api/profiles/**", "/api/tags").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

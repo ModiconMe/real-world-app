@@ -52,12 +52,10 @@ class AccountControllerTest {
                 .build();
 
         // when
-        ResultActions perform = mockMvc
-                .perform(
-                        post("/api/v1/users")
+        mockMvc.perform(
+                        post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -78,12 +76,10 @@ class AccountControllerTest {
                 .build();
 
         // when
-        ResultActions perform = mockMvc
-                .perform(
-                        post("/api/v1/users")
+        mockMvc.perform(
+                        post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());
 
@@ -103,12 +99,10 @@ class AccountControllerTest {
                 .build();
 
         // when
-        ResultActions perform = mockMvc
-                .perform(
-                        post("/api/v1/users")
+        mockMvc.perform(
+                        post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());
 
@@ -127,12 +121,10 @@ class AccountControllerTest {
                 .build();
 
         // when
-        ResultActions perform = mockMvc
-                .perform(
-                        post("/api/v1/users")
+        mockMvc.perform(
+                        post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());
 
@@ -153,10 +145,9 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        post("/api/v1/users/login")
+                        post("/api/users/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
                                 .accept(MediaType.APPLICATION_JSON));
 
         // then
@@ -175,12 +166,10 @@ class AccountControllerTest {
                 .build();
 
         // when
-        ResultActions perform = mockMvc
-                .perform(
-                        post("/api/v1/users/login")
+        mockMvc.perform(
+                        post("/api/users/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
@@ -197,12 +186,10 @@ class AccountControllerTest {
                 .build();
 
         // when
-        ResultActions perform = mockMvc
-                .perform(
-                        post("/api/v1/users/login")
+        mockMvc.perform(
+                        post("/api/users/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
@@ -230,19 +217,16 @@ class AccountControllerTest {
         String json = objectMapper.writeValueAsString(request) + "; " + objectMapper.writeValueAsString(accountDetails);
 
         // when
-        ResultActions perform = mockMvc
-                .perform(
-                        put("/api/v1/user")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer)
+        mockMvc.perform(put("/api/user")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(json
-                                )
+                                .content(json)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email", Matchers.is(request.getEmail())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username", Matchers.is(request.getUsername())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.bio", Matchers.is(request.getBio())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.image", Matchers.is(request.getImage())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.user.email", Matchers.is(request.getEmail())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.user.username", Matchers.is(request.getUsername())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.user.bio", Matchers.is(request.getBio())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.user.image", Matchers.is(request.getImage())));
 
         // then
         Optional<AccountEntity> optionalAccount = accountRepository.findByEmail(request.getEmail());
@@ -277,21 +261,19 @@ class AccountControllerTest {
                 .build();
 
         mockMvc.perform(
-                        post("/api/v1/users")
+                        post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(registration))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(registration)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        put("/api/v1/user")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer)
+                        put("/api/user")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(json
-                                )
+                                .content(json)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());
 
@@ -321,11 +303,10 @@ class AccountControllerTest {
         // when
         ResultActions perform = mockMvc
                 .perform(
-                        put("/api/v1/user")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + Bearer)
+                        put("/api/user")
+                                .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(json
-                                )
+                                .content(json)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());
 

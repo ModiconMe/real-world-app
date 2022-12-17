@@ -1,6 +1,8 @@
 package edu.popov.domain.profile.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 
 @Builder
@@ -8,6 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+@JsonTypeName("profile")
 public class ProfileDTO {
 
     @JsonProperty(value = "username", access = JsonProperty.Access.READ_ONLY)

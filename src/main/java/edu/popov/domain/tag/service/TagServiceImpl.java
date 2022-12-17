@@ -1,6 +1,5 @@
 package edu.popov.domain.tag.service;
 
-import edu.popov.domain.tag.dto.TagDTO;
 import edu.popov.domain.tag.entity.TagEntity;
 import edu.popov.domain.tag.repository.TagRepository;
 import lombok.RequiredArgsConstructor;

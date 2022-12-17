@@ -24,7 +24,7 @@ public class CommentMapper {
         return CommentDTO.builder()
                 .id(commentEntity.getId())
                 .body(commentEntity.getBody())
-                .author(accountMapper.mapToAccountDTO(commentEntity.getAccount()))
+                .author(profileMapper.mapToProfileDTO(commentEntity.getAccount()))
                 .createdAt(commentEntity.getCreatedAt())
                 .updatedAt(commentEntity.getUpdatedAt())
                 .build();

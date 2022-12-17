@@ -4,10 +4,10 @@ import edu.popov.domain.article.dto.CommentDTO;
 
 public interface CommentService {
 
-    CommentDTO addComment(String slug, CommentDTO.Create comment, Long id);
+    CommentDTO.SingleComment addComment(String slug, CommentDTO.Create comment, Long id);
 
     CommentDTO.MultipleComments getComments(String slug);
 
-    CommentDTO deleteComment(String slug, Long commentId, Long userId);
+    void deleteComment(String slug, Long commentId, Long userId);
 
 }

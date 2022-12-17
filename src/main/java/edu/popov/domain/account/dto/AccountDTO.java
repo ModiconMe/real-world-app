@@ -12,12 +12,16 @@ import lombok.*;
 @ToString
 @Getter
 @Setter
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY, property = "type") @JsonSubTypes({
-        @JsonSubTypes.Type(value = AccountDTO.Registration.class, name = "user_registration"),
-        @JsonSubTypes.Type(value = AccountDTO.Auth.class, name = "user_auth"),
-        @JsonSubTypes.Type(value = AccountDTO.Update.class, name = "user_update")
-})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+//@JsonSubTypes(
+//        {
+//                @JsonSubTypes.Type(value = AccountDTO.Registration.class, name = "user_registration"),
+//                @JsonSubTypes.Type(value = AccountDTO.Auth.class, name = "user_auth"),
+//                @JsonSubTypes.Type(value = AccountDTO.Update.class, name = "user_update")
+//        }
+//)
+@JsonTypeName("user")
+//@JsonRootName("user")
 public class AccountDTO {
 
     @JsonProperty(value = "username", access = JsonProperty.Access.READ_WRITE)
@@ -41,7 +45,9 @@ public class AccountDTO {
     @ToString
     @Getter
     @Setter
-    @JsonTypeName("user_registration")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+    @JsonTypeName("user")
+//    @JsonRootName("user")
     public static class Registration {
         @NotBlank(message = "User name should be not blank")
         @Pattern(regexp = "[\\w\\d]{1,30}", message = "string contains alphabet or digit with length 1 to 30")
@@ -50,7 +56,7 @@ public class AccountDTO {
 
         @NotBlank(message = "Email should be not blank")
         @Email(message = "Email should be valid")
-        @JsonProperty(value = "email",  access = JsonProperty.Access.READ_WRITE)
+        @JsonProperty(value = "email", access = JsonProperty.Access.READ_WRITE)
         private String email;
 
         @NotBlank(message = "Password should be not blank")
@@ -62,11 +68,12 @@ public class AccountDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    @JsonTypeName("user_auth")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+    @JsonTypeName("user")
     public static class Auth {
         @NotBlank(message = "Email should be not blank")
         @Email(message = "Email should be valid")
-        @JsonProperty(value = "email",  access = JsonProperty.Access.READ_WRITE)
+        @JsonProperty(value = "email", access = JsonProperty.Access.READ_WRITE)
         private String email;
 
         @NotBlank(message = "Password should be not blank")
@@ -78,23 +85,24 @@ public class AccountDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    @JsonTypeName("user_update")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+    @JsonTypeName("user")
     public static class Update {
-        @NotBlank(message = "User name should be not blank")
-        @Pattern(regexp = "[\\w\\d]{1,30}", message = "string contains alphabet or digit with length 1 to 30")
-        @JsonProperty(value = "username", access = JsonProperty.Access.READ_WRITE) // json object name
+//        @NotBlank(message = "User name should be not blank")
+//        @Pattern(regexp = "[\\w\\d]{1,30}", message = "string contains alphabet or digit with length 1 to 30")
+        @JsonProperty(value = "username") // json object name
         private String username;
 
-        @NotBlank(message = "Email should be not blank")
-        @Email(message = "Email should be valid")
-        @JsonProperty(value = "email",  access = JsonProperty.Access.READ_WRITE)
+//        @NotBlank(message = "Email should be not blank")
+//        @Email(message = "Email should be valid")
+        @JsonProperty(value = "email")
         private String email;
 
-        @NotBlank(message = "Password should be not blank")
-        @JsonProperty(value = "password", access = JsonProperty.Access.READ_WRITE)
+//        @NotBlank(message = "Password should be not blank")
+        @JsonProperty(value = "password")
         private String password;
 
-        @JsonProperty(value = "bio", access = JsonProperty.Access.READ_WRITE)
+        @JsonProperty(value = "bio")
         private String bio;
 
         @JsonProperty("image")

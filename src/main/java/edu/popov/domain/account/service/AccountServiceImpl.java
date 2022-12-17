@@ -6,6 +6,7 @@ import edu.popov.domain.account.entity.AccountEntity;
 import edu.popov.domain.account.repository.AccountRepository;
 import edu.popov.security.AccountDetails;
 import edu.popov.security.jwt.JwtUtils;
+import edu.popov.utils.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
+
+import static java.lang.String.format;
 
 @RequiredArgsConstructor
 @Service
@@ -24,6 +29,8 @@ public class AccountServiceImpl implements AccountService {
     private final AccountValidationService accountValidationService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+
+    private static final String ACCOUNT_NOT_FOUND_BY_ID = "Account with id %d is not exist";
 
     /**
      * Check that account are not exist by email and username, register new account.
@@ -80,11 +87,21 @@ public class AccountServiceImpl implements AccountService {
     public AccountDTO update(Long id, AccountDTO.Update request) {
         AccountEntity account = accountValidationService.updateValidation(id, request);
 
-        account.setUsername(request.getUsername());
-        account.setEmail(request.getEmail());
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
-        account.setBio(request.getBio());
-        account.setImage(request.getImage());
+        if (Objects.nonNull(request.getUsername()))
+            account.setUsername(request.getUsername());
+
+        if (Objects.nonNull(request.getEmail()))
+            account.setEmail(request.getEmail());
+
+        if (Objects.nonNull(request.getPassword()))
+            account.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        if (Objects.nonNull(request.getBio()))
+            account.setBio(request.getBio());
+
+        if (Objects.nonNull(request.getImage()))
+            account.setImage(request.getImage());
+
         account.setUpdatedAt(LocalDateTime.now());
 
         accountRepository.save(account);
@@ -93,7 +110,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public UserDetails currentUser() {
-        return (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public AccountDTO currentUser(Long userId) {
+        Optional<AccountEntity> optionalAccount = accountRepository.findById(userId);
+        if (optionalAccount.isEmpty())
+            throw new BadRequestException(format(ACCOUNT_NOT_FOUND_BY_ID, userId));
+        return mapper.mapToAccountDTO(optionalAccount.get());
     }
 }
