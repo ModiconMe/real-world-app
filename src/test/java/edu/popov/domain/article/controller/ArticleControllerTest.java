@@ -59,11 +59,9 @@ class ArticleControllerTest {
                 .email("user1@gmail.com")
                 .password("pass1")
                 .build();
-        mockMvc.perform(
-                        post("/api/users")
+        mockMvc.perform(post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request1))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request1)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         Optional<AccountEntity> expected1 = accountRepository.findByEmail(request1.getEmail());
@@ -74,11 +72,9 @@ class ArticleControllerTest {
                 .email("user2@gmail.com")
                 .password("pass2")
                 .build();
-        mockMvc.perform(
-                        post("/api/users")
+        mockMvc.perform(post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request2))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request2)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         Optional<AccountEntity> expected2 = accountRepository.findByEmail(request2.getEmail());
@@ -92,8 +88,7 @@ class ArticleControllerTest {
         ResultActions perform1 = mockMvc.perform(
                 post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth1))
-                        )
+                        .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth1)))
                         .accept(MediaType.APPLICATION_JSON));
         AccountDTO accountDTO1 = objectMapper.readValue(perform1.andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), AccountDTO.class);
         Bearer1 = accountDTO1.getToken();
@@ -103,11 +98,9 @@ class ArticleControllerTest {
                 .email("user2@gmail.com")
                 .password("pass2")
                 .build();
-        ResultActions perform2 = mockMvc.perform(
-                post("/api/users/login")
+        ResultActions perform2 = mockMvc.perform(post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth2))
-                        )
+                        .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth2)))
                         .accept(MediaType.APPLICATION_JSON));
         AccountDTO accountDTO2 = objectMapper.readValue(perform2.andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), AccountDTO.class);
         Bearer2 = accountDTO2.getToken();
@@ -131,9 +124,7 @@ class ArticleControllerTest {
         String json = objectMapper.writeValueAsString(articleDTO);
 
         // when send invalid request get error
-        mockMvc
-                .perform(
-                        post("/api/articles")
+        mockMvc.perform(post("/api/articles")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("random string")
@@ -141,9 +132,7 @@ class ArticleControllerTest {
                 .andExpect(status().isBadRequest());
 
         // create an article
-        mockMvc
-                .perform(
-                        post("/api/articles")
+        mockMvc.perform(post("/api/articles")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json)
@@ -155,9 +144,7 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.article.body", Matchers.is("body")));
 
         // read an article by slug
-        mockMvc
-                .perform(
-                        get("/api/articles/title")
+        mockMvc.perform(get("/api/articles/title")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -168,9 +155,7 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.article.body", Matchers.is("body")));
 
         // read not existing article
-        mockMvc
-                .perform(
-                        get("/api/articles/not_exist")
+        mockMvc.perform(get("/api/articles/not_exist")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -187,9 +172,7 @@ class ArticleControllerTest {
 
         String newJson = objectMapper.writeValueAsString(newArticleDTO);
 
-        mockMvc
-                .perform(
-                        put("/api/articles/title")
+        mockMvc.perform(put("/api/articles/title")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(newJson)
@@ -201,9 +184,7 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.article.body", Matchers.is("body")));
 
         // update not existing article
-        mockMvc
-                .perform(
-                        put("/api/articles/not_exist")
+        mockMvc.perform(put("/api/articles/not_exist")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(newJson)
@@ -211,18 +192,14 @@ class ArticleControllerTest {
                 .andExpect(status().isNotFound());
 
         // favor article
-        mockMvc
-                .perform(
-                        post("/api/articles/title1/favorite")
+        mockMvc.perform(post("/api/articles/title1/favorite")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.article.favorited", Matchers.is(true)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.article.favoritesCount", Matchers.is(1)));
-        mockMvc
-                .perform(
-                        post("/api/articles/title1/favorite")
+        mockMvc.perform(post("/api/articles/title1/favorite")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer2)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -231,9 +208,7 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.article.favoritesCount", Matchers.is(2)));
 
         // unfavor article
-        mockMvc
-                .perform(
-                        delete("/api/articles/title1/favorite")
+        mockMvc.perform(delete("/api/articles/title1/favorite")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -242,9 +217,7 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.article.favoritesCount", Matchers.is(1)));
 
         // delete an article
-        mockMvc
-                .perform(
-                        delete("/api/articles/title1")
+        mockMvc.perform(delete("/api/articles/title1")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(newJson)
@@ -252,9 +225,7 @@ class ArticleControllerTest {
                 .andExpect(status().isOk());
 
         // try to read after deleting
-        mockMvc
-                .perform(
-                        get("/api/articles/title1")
+        mockMvc.perform(get("/api/articles/title1")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -308,33 +279,25 @@ class ArticleControllerTest {
         String json4 = objectMapper.writeValueAsString(articleDTO4);
 
         // save some articles
-        mockMvc
-                .perform(
-                        post("/api/articles")
+        mockMvc.perform(post("/api/articles")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json1)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        mockMvc
-                .perform(
-                        post("/api/articles")
+        mockMvc.perform(post("/api/articles")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json2)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        mockMvc
-                .perform(
-                        post("/api/articles")
+        mockMvc.perform(post("/api/articles")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer2)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json3)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        mockMvc
-                .perform(
-                        post("/api/articles")
+        mockMvc.perform(post("/api/articles")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer2)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json4)
@@ -343,9 +306,7 @@ class ArticleControllerTest {
 
         // when
 
-        mockMvc
-                .perform(
-                        post("/api/articles/title1/favorite")
+        mockMvc.perform(post("/api/articles/title1/favorite")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer2)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -353,9 +314,7 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.article.favorited", Matchers.is(true)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.article.favoritesCount", Matchers.is(1)));
 
-        String contentAsString = mockMvc
-                .perform(
-                        get("/api/articles")
+        String contentAsString = mockMvc.perform(get("/api/articles")
                                 .param("limit", "2")
                                 .param("offset", "0")
                                 .param("favorited", "user2")
@@ -375,18 +334,14 @@ class ArticleControllerTest {
     @Order(4)
     void itShouldGetFeed_whenAuthenticate() throws Exception {
         // follow user2
-        mockMvc
-                .perform(
-                        post("/api/profiles/user2/follow")
+        mockMvc.perform(post("/api/profiles/user2/follow")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         // when
-        String contentAsString = mockMvc
-                .perform(
-                        get("/api/articles/feed")
+        String contentAsString = mockMvc.perform(get("/api/articles/feed")
                                 .param("limit", "2")
                                 .param("offset", "0")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
@@ -426,18 +381,14 @@ class ArticleControllerTest {
         String json4 = objectMapper.writeValueAsString(commentDTO4);
 
         // try to add comment without login and get UNAUTHORIZED exception
-        mockMvc
-                .perform(
-                        post("/api/articles/title1/comments")
+        mockMvc.perform(post("/api/articles/title1/comments")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json1)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
 
         // add some comments
-        mockMvc
-                .perform(
-                        post("/api/articles/title1/comments")
+        mockMvc.perform(post("/api/articles/title1/comments")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json1)
@@ -445,9 +396,7 @@ class ArticleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comment.body", Matchers.is("comment1")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comment.author.profile.username", Matchers.is("user1")));
-        mockMvc
-                .perform(
-                        post("/api/articles/title1/comments")
+        mockMvc.perform(post("/api/articles/title1/comments")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json2)
@@ -455,9 +404,7 @@ class ArticleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comment.body", Matchers.is("comment2")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comment.author.profile.username", Matchers.is("user1")));
-        mockMvc
-                .perform(
-                        post("/api/articles/title2/comments")
+        mockMvc.perform(post("/api/articles/title2/comments")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json3)
@@ -465,9 +412,7 @@ class ArticleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comment.body", Matchers.is("comment3")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comment.author.profile.username", Matchers.is("user1")));
-        mockMvc
-                .perform(
-                        post("/api/articles/title3/comments")
+        mockMvc.perform(post("/api/articles/title3/comments")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json4)
@@ -477,17 +422,13 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comment.author.profile.username", Matchers.is("user1")));
 
         // get comments by slug with no login
-        String comments1 = mockMvc
-                .perform(
-                        get("/api/articles/title1/comments")
+        String comments1 = mockMvc.perform(get("/api/articles/title1/comments")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         CommentDTO.MultipleComments article1Comments = objectMapper.readValue(comments1, CommentDTO.MultipleComments.class);
         assertThat(article1Comments.getComments().size()).isEqualTo(2);
-        String comments2 = mockMvc
-                .perform(
-                        get("/api/articles/title2/comments")
+        String comments2 = mockMvc.perform(get("/api/articles/title2/comments")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -495,34 +436,26 @@ class ArticleControllerTest {
         assertThat(article2Comments.getComments().size()).isEqualTo(1);
 
         // try delete comment without login and get FORBIDDEN
-        mockMvc
-                .perform(
-                        delete("/api/articles/title1/comments/2")
+        mockMvc.perform(delete("/api/articles/title1/comments/2")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer2)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
 
         // try delete comment other account comment and get UNAUTHORIZED
-        mockMvc
-                .perform(
-                        delete("/api/articles/title1/comments/2")
+        mockMvc.perform(delete("/api/articles/title1/comments/2")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
 
         // delete our comments
-        mockMvc
-                .perform(
-                        delete("/api/articles/title1/comments/2")
+        mockMvc.perform(delete("/api/articles/title1/comments/2")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        String commentsAfterDeleting = mockMvc
-                .perform(
-                        get("/api/articles/title1/comments")
+        String commentsAfterDeleting = mockMvc.perform(get("/api/articles/title1/comments")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();

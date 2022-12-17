@@ -50,8 +50,10 @@ public class ArticleEntity {
     )
     private AccountEntity author;
 
+    @Builder.Default
     @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<TagEntity> tags = new ArrayList<>();
+    @Builder.Default
     @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
     private List<FavoriteEntity> favoriteList = new ArrayList<>();
 

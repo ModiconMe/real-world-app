@@ -58,11 +58,9 @@ class ProfileControllerTest {
                 .email("profiletest1@gmail.com")
                 .password("profiletest1")
                 .build();
-        mockMvc.perform(
-                        post("/api/users")
+        mockMvc.perform(post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request1))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request1)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         Optional<AccountEntity> expected1 = accountRepository.findByEmail(request1.getEmail());
@@ -73,11 +71,9 @@ class ProfileControllerTest {
                 .email("profiletest2@gmail.com")
                 .password("profiletest2")
                 .build();
-        mockMvc.perform(
-                        post("/api/users")
+        mockMvc.perform(post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request2))
-                                )
+                                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request2)))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         Optional<AccountEntity> expected2 = accountRepository.findByEmail(request2.getEmail());
@@ -88,11 +84,9 @@ class ProfileControllerTest {
                 .email("profiletest1@gmail.com")
                 .password("profiletest1")
                 .build();
-        ResultActions perform1 = mockMvc.perform(
-                post("/api/users/login")
+        ResultActions perform1 = mockMvc.perform(post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth1))
-                        )
+                        .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth1)))
                         .accept(MediaType.APPLICATION_JSON));
         AccountDTO accountDTO1 = objectMapper.readValue(perform1.andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), AccountDTO.class);
         Bearer1 = accountDTO1.getToken();
@@ -102,11 +96,9 @@ class ProfileControllerTest {
                 .email("profiletest2@gmail.com")
                 .password("profiletest2")
                 .build();
-        ResultActions perform2 = mockMvc.perform(
-                post("/api/users/login")
+        ResultActions perform2 = mockMvc.perform(post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth2))
-                        )
+                        .content(Objects.requireNonNull(objectMapper.writeValueAsString(auth2)))
                         .accept(MediaType.APPLICATION_JSON));
         AccountDTO accountDTO2 = objectMapper.readValue(perform2.andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), AccountDTO.class);
         Bearer2 = accountDTO2.getToken();
@@ -118,9 +110,7 @@ class ProfileControllerTest {
     void itShouldGetProfile() throws Exception {
         // given
         // when
-        mockMvc
-                .perform(
-                        get("/api/profiles/profiletest1")
+        mockMvc.perform(get("/api/profiles/profiletest1")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -134,9 +124,7 @@ class ProfileControllerTest {
     void itShouldNotGetProfile_whenProfileIsNotFound() throws Exception {
         // given
         // when
-        mockMvc
-                .perform(
-                        get("/api/profiles/profiletest3")
+        mockMvc.perform(get("/api/profiles/profiletest3")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -148,9 +136,7 @@ class ProfileControllerTest {
     void itShouldFollowProfile() throws Exception {
         // given
         // when
-        mockMvc
-                .perform(
-                        post("/api/profiles/profiletest2/follow")
+        mockMvc.perform(post("/api/profiles/profiletest2/follow")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -164,9 +150,7 @@ class ProfileControllerTest {
     void itShouldNotFollowProfile_whenProfileIsNotFound() throws Exception {
         // given
         // when
-        mockMvc
-                .perform(
-                        post("/api/profiles/profiletest3/follow")
+        mockMvc.perform(post("/api/profiles/profiletest3/follow")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -178,9 +162,7 @@ class ProfileControllerTest {
     void itShouldGetFollowings() throws Exception {
         // given
         // when
-        mockMvc
-                .perform(
-                        get("/api/profiles/followings")
+        mockMvc.perform(get("/api/profiles/followings")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -194,9 +176,7 @@ class ProfileControllerTest {
     void itShouldGetFollowers() throws Exception {
         // given
         // when
-        mockMvc
-                .perform(
-                        get("/api/profiles/followers")
+        mockMvc.perform(get("/api/profiles/followers")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer2)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -210,9 +190,7 @@ class ProfileControllerTest {
     void itShouldUnfollowProfile() throws Exception {
         // given
         // when
-        mockMvc
-                .perform(
-                        delete("/api/profiles/profiletest2/follow")
+        mockMvc.perform(delete("/api/profiles/profiletest2/follow")
                                 .header(HttpHeaders.AUTHORIZATION, "Token " + Bearer1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
