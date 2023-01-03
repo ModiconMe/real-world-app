@@ -11,6 +11,7 @@ import edu.popov.domain.profile.service.ProfileService;
 import edu.popov.utils.exception.ForbiddenException;
 import edu.popov.utils.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.time.ZonedDateTime;
 
 import static java.lang.String.format;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -53,7 +55,9 @@ public class CommentServiceImpl implements CommentService {
 
         CommentEntity savedComment = commentRepository.save(commentEntity);
 
-        return new CommentDTO.SingleComment(commentMapper.mapToCommentDTO(savedComment));
+        CommentDTO.SingleComment commentDto = new CommentDTO.SingleComment(commentMapper.mapToCommentDTO(savedComment));
+        log.info("Add comment {} to article with slug {}", comment, slug);
+        return commentDto;
     }
 
     /**
@@ -89,9 +93,12 @@ public class CommentServiceImpl implements CommentService {
 
         if (commentEntity.getAccount().getUsername().equals(user.getUsername())) {
             commentRepository.deleteById(commentId);
+            log.info("Add comment with id {} to article with slug {}", commentId, slug);
             return;
         }
 
-        throw new ForbiddenException(format(IS_NOT_AN_OWNER_OF_COMMENT, commentId, user.getUsername()));
+        String msg = format(IS_NOT_AN_OWNER_OF_COMMENT, commentId, user.getUsername());
+        log.error(msg);
+        throw new ForbiddenException(msg);
     }
 }

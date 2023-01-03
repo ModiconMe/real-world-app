@@ -9,6 +9,7 @@ import edu.popov.domain.profile.entity.FollowRelationId;
 import edu.popov.domain.profile.repository.FollowRelationRepository;
 import edu.popov.utils.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import static java.lang.String.format;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ProfileServiceImpl implements ProfileService {
 
     private final AccountRepository accountRepository;
@@ -81,6 +83,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         followRelationRepository.save(followRelation);
 
+        log.info("account {} follow account {}", profile.getUsername(), userAccount.getUsername());
         return followedProfile;
     }
 
@@ -108,6 +111,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         followRelationRepository.deleteById(followRelationId);
 
+        log.info("account {} unfollow account {}", profile.getUsername(), userAccount.getUsername());
         return unfollowedProfile;
     }
 

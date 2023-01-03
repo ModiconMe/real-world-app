@@ -18,6 +18,7 @@ import edu.popov.utils.exception.BadRequestException;
 import edu.popov.utils.exception.ForbiddenException;
 import edu.popov.utils.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -50,13 +52,18 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional
     public ArticleDTO.SingleArticle<ArticleDTO> createArticle(ArticleDTO articleDTO, Long userId) {
+        log.debug("Create article {} by user {}", articleDTO, userId);
         String slug = String.join("-", articleDTO.getTitle().split(" "));
 
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
-        if (optionalArticle.isPresent())
-            throw new BadRequestException(format(ARTICLE_ALREADY_EXISTS_BY_SLUG, slug));
+        if (optionalArticle.isPresent()) {
+            String msg = format(ARTICLE_ALREADY_EXISTS_BY_SLUG, slug);
+            log.error(msg);
+            throw new BadRequestException(msg);
+        }
 
         AccountEntity author = profileService.getAccountById(userId);
+        log.debug("Author {}", author);
 
         List<TagEntity> tags = new ArrayList<>();
         if (Objects.nonNull(articleDTO.getTagList()))
@@ -75,8 +82,11 @@ public class ArticleServiceImpl implements ArticleService {
                 .build();
         tags.forEach(article::addTag);
 
-        return new ArticleDTO.SingleArticle<>(articleMapper.mapToSingleArticleDTO(
+        ArticleDTO.SingleArticle<ArticleDTO> articleDto = new ArticleDTO.SingleArticle<>(articleMapper.mapToSingleArticleDTO(
                 articleRepository.save(article), userId));
+        log.info("Create article {}", articleDto);
+
+        return articleDto;
     }
 
     /**
@@ -86,12 +96,17 @@ public class ArticleServiceImpl implements ArticleService {
     @Transactional(readOnly = true)
     public ArticleDTO.SingleArticle<ArticleDTO> getArticleBySlug(String slug, Long userId) {
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
-        if (optionalArticle.isEmpty())
-            throw new NotFoundException(format(ARTICLE_NOT_FOUND_BY_SLUG, slug));
+        if (optionalArticle.isEmpty()) {
+            String msg = format(ARTICLE_NOT_FOUND_BY_SLUG, slug);
+            log.error(msg);
+            throw new NotFoundException(msg);
+        }
 
         ArticleEntity article = optionalArticle.get();
 
-        return new ArticleDTO.SingleArticle<>(articleMapper.mapToSingleArticleDTO(article, userId));
+        ArticleDTO.SingleArticle<ArticleDTO> articleDto = new ArticleDTO.SingleArticle<>(articleMapper.mapToSingleArticleDTO(article, userId));
+        log.info(articleDto.toString());
+        return articleDto;
     }
 
     /**
@@ -100,9 +115,13 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional
     public ArticleDTO.SingleArticle<ArticleDTO> updateArticle(String slug, ArticleDTO.Update articleDTO, Long userId) {
+        log.debug("Update article {}, new article {}", slug, articleDTO);
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
-        if (optionalArticle.isEmpty())
-            throw new NotFoundException(format(ARTICLE_NOT_FOUND_BY_SLUG, slug));
+        if (optionalArticle.isEmpty()) {
+            String msg = format(ARTICLE_NOT_FOUND_BY_SLUG, slug);
+            log.error(msg);
+            throw new NotFoundException(msg);
+        }
 
         ArticleEntity articleEntity = optionalArticle.get();
 
@@ -117,9 +136,11 @@ public class ArticleServiceImpl implements ArticleService {
         if (Objects.nonNull(articleDTO.getBody()))
             articleEntity.setBody(articleDTO.getBody());
 
-        return new ArticleDTO.SingleArticle<>(articleMapper.mapToSingleArticleDTO(
+        ArticleDTO.SingleArticle<ArticleDTO> articleDto = new ArticleDTO.SingleArticle<>(articleMapper.mapToSingleArticleDTO(
                 articleRepository.save(articleEntity), userId
         ));
+        log.info("Create article {}", articleDto);
+        return articleDto;
     }
 
     /**
@@ -130,15 +151,20 @@ public class ArticleServiceImpl implements ArticleService {
     public void deleteArticle(String slug, String username) {
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
 
-        if (optionalArticle.isEmpty())
-            throw new NotFoundException(format(ARTICLE_NOT_FOUND_BY_SLUG, slug));
+        if (optionalArticle.isEmpty()) {
+            String msg = format(ARTICLE_NOT_FOUND_BY_SLUG, slug);
+            log.error(msg);
+            throw new NotFoundException(msg);
+        }
 
         if (optionalArticle.get().getAuthor().getEmail().equals(username)) {
+            log.info("Deleting article with slug {}", slug);
             articleRepository.deleteBySlug(slug);
             return;
         }
-
-        throw new ForbiddenException(format(IS_NOT_AN_OWNER_OF_ARTICLE, slug, username));
+        String msg = format(IS_NOT_AN_OWNER_OF_ARTICLE, slug, username);
+        log.error(msg);
+        throw new ForbiddenException(msg);
     }
 
     /**
@@ -170,12 +196,14 @@ public class ArticleServiceImpl implements ArticleService {
         List<ArticleDTO> articles = articleMapper.mapToMultipleArticleDTOList(
                 articleRepository.findByFilter(articleFilter.getTag(), articleFilter.getAuthor(), account, pageable),
                 userId);
-        return ArticleDTO.MultipleArticle.builder()
+        ArticleDTO.MultipleArticle articleDto = ArticleDTO.MultipleArticle.builder()
                 .articles(
                         articles
                 )
                 .articlesCount(articles.size())
                 .build();
+        log.debug("Return article {}", articleDto);
+        return articleDto;
     }
 
     /**
@@ -184,8 +212,11 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleDTO.SingleArticle<ArticleDTO> favoriteArticle(String slug, Long userId) {
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
-        if (optionalArticle.isEmpty())
-            throw new NotFoundException(format(ARTICLE_NOT_FOUND_BY_SLUG, slug));
+        if (optionalArticle.isEmpty()) {
+            String msg = format(ARTICLE_NOT_FOUND_BY_SLUG, slug);
+            log.error(msg);
+            throw new NotFoundException(msg);
+        }
 
         ArticleEntity articleEntity = optionalArticle.get();
         AccountEntity user = profileService.getAccountById(userId);
@@ -195,8 +226,10 @@ public class ArticleServiceImpl implements ArticleService {
                 .accountId(user.getId())
                 .build();
 
-        if (favoriteRepository.findById(favoriteEntityId).isPresent())
-            return getArticleBySlug(slug, userId);
+        ArticleDTO.SingleArticle<ArticleDTO> articleBySlug = getArticleBySlug(slug, userId);
+        if (favoriteRepository.findById(favoriteEntityId).isPresent()) {
+            return articleBySlug;
+        }
 
         FavoriteEntity favorite = FavoriteEntity.builder()
                 .id(favoriteEntityId)
@@ -205,7 +238,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .build();
         favoriteRepository.save(favorite);
 
-        return getArticleBySlug(slug, userId);
+        return articleBySlug;
     }
 
     /**
@@ -214,8 +247,11 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleDTO.SingleArticle<ArticleDTO> unfavoriteArticle(String slug, Long userId) {
         Optional<ArticleEntity> optionalArticle = articleRepository.findBySlug(slug);
-        if (optionalArticle.isEmpty())
-            throw new NotFoundException(format(ARTICLE_NOT_FOUND_BY_SLUG, slug));
+        if (optionalArticle.isEmpty()) {
+            String msg = format(ARTICLE_NOT_FOUND_BY_SLUG, slug);
+            log.error(msg);
+            throw new NotFoundException(msg);
+        }
 
         ArticleEntity articleEntity = optionalArticle.get();
         AccountEntity user = profileService.getAccountById(userId);
@@ -225,12 +261,13 @@ public class ArticleServiceImpl implements ArticleService {
                 .accountId(user.getId())
                 .build();
 
+        ArticleDTO.SingleArticle<ArticleDTO> articleDto = getArticleBySlug(slug, userId);
         if (favoriteRepository.findById(favoriteEntityId).isEmpty())
-            return getArticleBySlug(slug, userId);
+            return articleDto;
 
         favoriteRepository.deleteById(favoriteEntityId);
 
-        return getArticleBySlug(slug, userId);
+        return articleDto;
     }
 
     /**

@@ -9,6 +9,7 @@ import edu.popov.security.jwt.JwtUtils;
 import edu.popov.utils.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -35,6 +37,7 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public AccountDTO registry(AccountDTO.Registration request) {
+        log.debug(request.toString());
         accountValidationService.registryValidation(request); // check that account registration request is valid, else throw
         AccountEntity account = mapper.mapToAccount(request);
 
@@ -42,9 +45,12 @@ public class AccountServiceImpl implements AccountService {
         account.setCreatedAt(LocalDateTime.now());
         account.setUpdatedAt(LocalDateTime.now());
 
-        return mapper.mapToAccountDTO(
+        AccountDTO accountDTO = mapper.mapToAccountDTO(
                 accountRepository.save(account)
         );
+
+        log.info(accountDTO.toString());
+        return accountDTO;
     }
 
     /**
@@ -52,19 +58,25 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public AccountDTO auth(AccountDTO.Auth request) {
+        log.debug(request.toString());
         AccountEntity account = accountValidationService.authValidation(request);
         String token = jwtUtils.generateToken(AccountDetails.builder()
                 .id(account.getId())
                 .email(account.getEmail())
                 .password(account.getPassword())
                 .build());
-        return AccountDTO.builder()
+
+
+        AccountDTO accountDTO = AccountDTO.builder()
                 .email(account.getEmail())
                 .username(account.getUsername())
                 .bio(account.getBio())
                 .image(account.getImage())
                 .token(token)
                 .build();
+
+        log.info(accountDTO.toString());
+        return accountDTO;
     }
 
     /**
@@ -73,6 +85,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountDTO update(Long id, AccountDTO.Update request) {
+        log.debug("Update account with id {}, new account {}", id, request.toString());
         AccountEntity account = accountValidationService.updateValidation(id, request);
 
         if (Objects.nonNull(request.getUsername()))
@@ -94,7 +107,9 @@ public class AccountServiceImpl implements AccountService {
 
         accountRepository.save(account);
 
-        return mapper.mapToAccountDTO(account);
+        AccountDTO accountDTO = mapper.mapToAccountDTO(account);
+        log.info(accountDTO.toString());
+        return accountDTO;
     }
 
     /**
@@ -103,8 +118,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDTO currentUser(Long userId) {
         Optional<AccountEntity> optionalAccount = accountRepository.findById(userId);
-        if (optionalAccount.isEmpty())
-            throw new BadRequestException(format(ACCOUNT_NOT_FOUND_BY_ID, userId));
-        return mapper.mapToAccountDTO(optionalAccount.get());
+        if (optionalAccount.isEmpty()) {
+            String msg = format(ACCOUNT_NOT_FOUND_BY_ID, userId);
+            log.error(msg);
+            throw new BadRequestException(msg);
+        }
+
+        AccountDTO accountDTO = mapper.mapToAccountDTO(optionalAccount.get());
+        log.info(accountDTO.toString());
+        return accountDTO;
     }
 }
