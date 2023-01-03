@@ -226,9 +226,8 @@ public class ArticleServiceImpl implements ArticleService {
                 .accountId(user.getId())
                 .build();
 
-        ArticleDTO.SingleArticle<ArticleDTO> articleBySlug = getArticleBySlug(slug, userId);
         if (favoriteRepository.findById(favoriteEntityId).isPresent()) {
-            return articleBySlug;
+            return getArticleBySlug(slug, userId);
         }
 
         FavoriteEntity favorite = FavoriteEntity.builder()
@@ -238,7 +237,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .build();
         favoriteRepository.save(favorite);
 
-        return articleBySlug;
+        return getArticleBySlug(slug, userId);
     }
 
     /**
@@ -261,13 +260,12 @@ public class ArticleServiceImpl implements ArticleService {
                 .accountId(user.getId())
                 .build();
 
-        ArticleDTO.SingleArticle<ArticleDTO> articleDto = getArticleBySlug(slug, userId);
         if (favoriteRepository.findById(favoriteEntityId).isEmpty())
-            return articleDto;
+            return getArticleBySlug(slug, userId);
 
         favoriteRepository.deleteById(favoriteEntityId);
 
-        return articleDto;
+        return getArticleBySlug(slug, userId);
     }
 
     /**
