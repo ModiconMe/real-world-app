@@ -20,6 +20,7 @@
 - Spring Boot 3.0.0 и Java 17
 - Spring Data JPA + Hibernate + H2-database
 - Spring Security 6 + jwt
+- Logback
 - Spring Validation для валидации rest запросов
 - Jackson для сериализации и дессериализации запросов и ответов
 - JUnit 5 + AssertJ + Mockito для тестирования
